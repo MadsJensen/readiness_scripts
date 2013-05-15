@@ -10,4 +10,3 @@ This file will include a desciption of the files and directories and the thougts
 
 - Preprocessing 
 
-isis test
