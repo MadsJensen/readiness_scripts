@@ -9,3 +9,5 @@ This file will include a desciption of the files and directories and the thougts
   - this will include a csv file for each subject with the fro teh badchannels to be used in the maxfilter script.
 
 - Preprocessing 
+
+isis test
