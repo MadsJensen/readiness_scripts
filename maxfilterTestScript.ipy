@@ -1,0 +1,35 @@
+
+
+import numpy as np
+
+#  make empty list for the names of subjects & files
+rawList =  !ls *raw.fif
+outputTsssList = []
+outputTransList = []
+headposLog = []
+tsss_mcLog = []
+transLog = []
+bcFileNames = []
+
+print rawList
+
+# make the lists of files and subjects
+for i in range(len(rawList)):
+    outputTsssList.append(rawList[i][:-8] + '_tsss_mc.fif')
+    outputTransList.append(rawList[i][:-8] + '_tsss_mc_trans.fif')
+    headposLog.append(rawList[i][:-8] + '_headpos.txt')
+    tsss_mcLog.append(rawList[i][:-8] + '_tsss_mc.log')
+    transLog.append(rawList[i][:-8] + '_tsss_mc_trans.log')
+    bcFileNames.append(rawList[i][:-8] + '_badChans.csv')
+
+
+
+for i in range(len(rawList)):
+   
+    badChannels = np.genfromtxt(bcFileNames[i], delimiter=',', dtype='int')
+    print 'Bad channels =', badChannels
+    !/neuro/bin/util/maxfilter -f {rawList[i]} -o {outputTsssList[i]} -st 10 -movecomp -hp {headposLog[i]} -bad {badChannels[i]} -v -force | tee {tsss_mcLog[i]}
+
+for i in range(len(rawList)):
+    !/neuro/bin/util/maxfilter -f {outputTsssList[i]} -o {outputTransList[i]} -trans default -force -v | tee {transLog[i]}
+
