@@ -1,0 +1,2 @@
+find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'plan'
+
