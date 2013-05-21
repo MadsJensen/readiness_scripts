@@ -1,2 +1,3 @@
-find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'plan'
-
+find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'plan' > plan_fifs.txt
+find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'classic' > classic_fifs.txt
+find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'interupt' > interupt_fifs.txt
