@@ -8,7 +8,7 @@ inter_fifs = !find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | gre
 
 # remove sub 1
 del plan_fifs[0]
-del inter_fifs[0] # remove extra due to search criteria
+del inter_fifs[0]  # remove extra due to search criteria
 del inter_fifs[0]
 
 for i in range(len(plan_fifs)):
