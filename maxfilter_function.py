@@ -1,6 +1,6 @@
 
-from mne import fiff
 
+import csv
 
 def mfFunction(sub_id, session):
     # Paths
@@ -16,14 +16,10 @@ def mfFunction(sub_id, session):
     headpos_logname = "sub_" + str(sub_id) + "_%s_headpos.txt" % session
     #
     # setup the badchannels
-    raw = fiff.Raw(raw_fname, preload=False)
-    badChns = raw.info['bads']
-    badchannel_filename = 'sub_' + str(sub_id) + '_%s_bc.csv' % session
+    badchannel_filename = 'sub_' + str(sub_id) + '_%s_badChans.csv' % session
     bcFname = badchannel_path + badchannel_filename
-    badchannels = np.genfromtxt(bcFname, delimiter=',', dtype='int')
-    #
-    # apply maxfilter to correct for movements and badchannels
-    !/neuro/bin/util/maxfilter -f {raw_fname} -o {tsss_fname} -st 10 -movecomp -hp {headpos_logname} -bad {badchannels} -v -force | tee {tsss_logname}
+    # badchannels = np.genfromtxt(bcFname, delimiter=
     #
     # apply maxfilter to make the transformation to 0,0,0
-    !/neuro/bin/util/maxfilter -f {tsss_fname} -o {trans_fname} -trans default -force -v | tee {trans_logname}
+#    !/neuro/bin/util/maxfilter -f {tsss_fname} -o {trans_fname} -trans default -force -v | tee {trans_logname}
+    
