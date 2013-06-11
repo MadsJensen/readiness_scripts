@@ -1,29 +1,33 @@
 
 
-def mfFunction(sub_id):
-   
+import csv
 
+def mfFunction(sub_id, session):
     # Paths
     project_path = "/projects/MINDLAB2011_24-MEG-readiness/"
     badchannel_path = project_path + "scripts/Badchannels/"
-    
-# file names
-    raw_fname = "sub_" + str(sub_id) + "_planning_raw.fif"  
-    tsss_fname = "sub_" + str(sub_id) + "_tsss_mc.fif"   
-    tsss_logname = "sub_" + str(sub_id) + "_tsss_mc.log" 
-    trans_fname = "sub_" + str(sub_id) + "_tsss_mc_trans.fif" 
-    trans_logname = "sub_" + str(sub_id) + "_tsss_mc_trans.log" 
-    headpos_log = "sub_" + str(sub_id) + "_headpos.txt"
-    
+    #
+    # file names for planning session
+    raw_fname = "sub_" + str(sub_id) + "_%s_raw.fif" % session
+    tsss_fname = "sub_" + str(sub_id) + "_%s_tsss_mc.fif" % session
+    tsss_logname = "sub_" + str(sub_id) + "_%s_tsss_mc.log" % session
+    trans_fname = "sub_" + str(sub_id) + "_%s_tsss_mc_trans.fif" % session
+    trans_logname = "sub_" + str(sub_id) + "_%s_tsss_mc_trans.log" % session
+    headpos_logname = "sub_" + str(sub_id) + "_%s_headpos.txt" % session
+    #
     # setup the badchannels
-    badchannel_filename = 'sub_' + str(sub_id) + '_badchannels.csv'
-    bcFname = badchannel_path + badchannel_filename 
-    badchannels = np.genfromtxt(bcFname, delimiter=',', dtype='int')
-
-    !/neuro/bin/util/maxfilter -f {raw_fname} -o tsss_fname -st 10 -movecomp -hp headpos_logname -bad badchannels -v -force | tee tsss_logname 
-
-#for i in range(len(rawList)):
- #   !/neuro/bin/util/maxfilter -f {outputTsssList[i]} -o {outputTransList[i]} -trans default -force -v | tee {transLog[i]}
+    badchannel_filename = 'sub_' + str(sub_id) + '_%s_badChans.csv' % session
+    bcFname = badchannel_path + badchannel_filename
+    badchannels = list(csv.reader(open(bcFname)))
+    
+    print badchannels
+    # badchannels = np.genfromtxt(bcFname, delimiter=
+    #
+    #  apply maxfilter to correct for bad channels, movement & tsss
+    !/neuro/bin/util/maxfilter -f {raw_fname} -o {tsss_fname} -st 10 -movecomp -hp {headpos_logname} -bad {badchannels} -v -force | tee {tsss_logname}    # 
+    # apply maxfilter to make the transformation to 0,0,0
+    !/neuro/bin/util/maxfilter -f {tsss_fname} -o {trans_fname} -trans default -force -v | tee {trans_logname}
+    
 
 
 
