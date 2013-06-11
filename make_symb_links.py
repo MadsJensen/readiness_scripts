@@ -1,6 +1,4 @@
 
-
-
 plan_fifs = !find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'plan'
 classic_fifs = !find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'classic'
 inter_fifs = !find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'nter'
