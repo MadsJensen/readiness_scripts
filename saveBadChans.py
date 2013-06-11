@@ -28,3 +28,10 @@ def save_bad_chans(sub_id, session):
 
 #    for bc in foo:
 #        f.write("%s\n" % bc)
+
+
+conditions = ['plan', 'classic', 'interupt']
+subs = [2,3]
+for condition in conditions:
+    for sub in subs:
+        save_bad_chans(sub, condition)
