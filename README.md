@@ -40,6 +40,7 @@ This file will include a description of the files and directories and the thougt
         - reduce with PCA to 64 dimensions
         - find ICA component
 - **ica\_viz.m**
-    - vizualising teh ica components
+    - vizualising the ica components
+
 ### warpper\_ft\_pipeline.m
 - wrapper function to run preprocessing pipeline, from preproc\_func to ica\_process
