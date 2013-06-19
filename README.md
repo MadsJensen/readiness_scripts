@@ -7,7 +7,6 @@ This file will include a description of the files and directories and the thougt
 
 
 # General remarks
-
 ## Badchannels (directory)
 - this will include a csv file for each subject with the fro the badchannels to be used in the maxfilter script.
 
@@ -31,7 +30,7 @@ This file will include a description of the files and directories and the thougt
     - uses Fieldtrip to:
         - Segment data, from -3.5 to 0.5 related to button press.
         - Low-pass filter @ 128Hz
-        - Band-pass filter @ 49 & 51, 99, 101
+        - Band-pass filter @ 49 & 51, 99 & 101
         - Downsample to 256Hz
 - **auto\_artifact\_remove.m**
     - uses Fieldtrip to automatically remove trials based on muscle and squid jumps
@@ -44,3 +43,7 @@ This file will include a description of the files and directories and the thougt
 
 ### warpper\_ft\_pipeline.m
 - wrapper function to run preprocessing pipeline, from preproc\_func to ica\_process
+
+*test*
+
+

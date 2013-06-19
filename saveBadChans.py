@@ -31,7 +31,7 @@ def save_bad_chans(sub_id, session):
 
 
 conditions = ['plan', 'classic', 'interupt']
-subs = [2,3]
+subs = [6,7,8,9]
 for condition in conditions:
     for sub in subs:
         save_bad_chans(sub, condition)
