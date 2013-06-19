@@ -5,16 +5,18 @@ function [preproc_data_grad] = preproc_func(subId, session, Channels)
 cfg                         = [];
 cfg.dataset                 = ...
   sprintf('sub_%d_%s_tsss_mc.fif', subId, session); 
-% cfg.trialdef.eventtype      = 'STI101';
-% cfg.trialdef.eventvalue     = 1; % trigger value
 cfg.trialdef.prestim        = 3.5; % in seconds
 cfg.trialdef.poststim       = .5; % in seconds
 cfg.continuous              = 'yes';
-cfg.trialfun                = 'classic_select';
+
+switch session
+    case 'interupt'
+        cfg.trialfun        = 'interupt_select';
+    otherwise
+        cfg.trialfun        = 'classic_select';
+end
 
 cfg = ft_definetrial(cfg);
-
-%cfg.trl([1,3,6,8,18,28,30,34,36,37,41,43,44,47,48,50,57,58,62,65;],:) =[];
 
 cfg.channel                 = Channels;
 cfg.bsfilter                = 'yes';

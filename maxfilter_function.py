@@ -24,9 +24,9 @@ def mfFunction(sub_id, session):
     # badchannels = np.genfromtxt(bcFname, delimiter=
     #
     #  apply maxfilter to correct for bad channels, movement & tsss
-    !/neuro/bin/util/maxfilter -f {raw_fname} -o {tsss_fname} -st 10 -movecomp -hp {headpos_logname} -bad {badchannels} -v -force | tee {tsss_logname}    # 
+    !/neuro/bin/util/maxfilter -f {raw_fname} -o {tsss_fname} -st 10 -movecomp -hp {headpos_logname} -bad {badchannels} -v -force -site Mar11-May13 | tee {tsss_logname}    # 
     # apply maxfilter to make the transformation to 0,0,0
-    !/neuro/bin/util/maxfilter -f {tsss_fname} -o {trans_fname} -trans default -force -v | tee {trans_logname}
+    !/neuro/bin/util/maxfilter -f {tsss_fname} -o {trans_fname} -frame head -origin 0 0 40 -trans default -force -v -site Mar11-May13 | tee {trans_logname}
     
 
 

@@ -15,10 +15,15 @@ posttrig =  round(cfg.trialdef.poststim * hdr.Fs);
 % look for the combination of a trigger "7" followed by a trigger "64"
 % for each trigger except the last one
 trl = [];
-for j = 1:(length(value)-1)
-  if j > 1
+for j = 1:length(value)
+  if j == 1
+    trg1 = value(j);
+    trg2 = value(j); 
+  else
     trg1 = value(j);
     trg2 = value(j-1);
+  end
+  
     if trg1 == 1 && trg2 == 1
       trlbegin = sample(j) + pretrig;
       trlend   = sample(j) + posttrig;
@@ -26,6 +31,4 @@ for j = 1:(length(value)-1)
       newtrl   = [trlbegin trlend offset];
       trl      = [trl; newtrl];
     end
-  end
-  
 end
