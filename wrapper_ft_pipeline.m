@@ -30,12 +30,12 @@ eval(sprintf('save sub_%d_%s_artifact_removed_mag data_no_arti_mag', subid, sess
 %
 %% find ICA components
 %for grads
-data_noarti_comp_grads= ica_process(data_no_arti_grad)
+data_no_arti_comp_grads= ica_process(data_no_arti_grad)
 % for mags
-data_noarti_comp_mags = ica_process(data_no_arti_mag)
+data_no_arti_comp_mags = ica_process(data_no_arti_mag)
 %
 % save the grads results
-eval(sprintf('save sub_%d_%s_ica_comp_grad data_noarti_comp_grads', subid, session));
+eval(sprintf('save sub_%d_%s_ica_comp_grad data_no_arti_comp_grads', subid, session));
 % save the mags results
-eval(sprintf('save sub_%d_%s_ica_comp_mag data_noarti_comp_mags', subid, session));
+eval(sprintf('save sub_%d_%s_ica_comp_mag data_no_arti_comp_mags', subid, session));
 
