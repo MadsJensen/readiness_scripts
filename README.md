@@ -40,10 +40,13 @@ This file will include a description of the files and directories and the thougt
         - find ICA component
 - **ica\_viz.m**
     - vizualising the ica components
-
+  **ica\_remove_comp.m**
+    - uses Fieldtrip to remove the components from the data
 ### warpper\_ft\_pipeline.m
 - wrapper function to run preprocessing pipeline, from preproc\_func to ica\_process
+- ica components have to visually identified for each subject and sessions
+    - use ica\_viz.m for that 
+    - use ica\_remove\_comp.m to remove identified components
 
-*test*
 
 
