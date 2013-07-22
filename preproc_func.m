@@ -11,7 +11,7 @@ cfg.continuous              = 'yes';
 
 switch session
     case 'interupt'
-        cfg.trialfun        = 'interupt_select';
+        cfg.trialfun        = 'classic_select';
     otherwise
         cfg.trialfun        = 'classic_select';
 end
