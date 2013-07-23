@@ -42,6 +42,10 @@ This file will include a description of the files and directories and the thougt
     - vizualising the ica components
   **ica\_remove_comp.m**
     - uses Fieldtrip to remove the components from the data
+
+-  **combine_planar**
+    - function to return a RMS conbimed data structure of the gradiometors
+
 ### warpper\_ft\_pipeline.m
 - wrapper function to run preprocessing pipeline, from preproc\_func to ica\_process
 - ica components have to visually identified for each subject and sessions
