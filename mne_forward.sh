@@ -9,6 +9,8 @@ MRIpath='/media/mje/KINGSTON/MEG_libet/Data/mri'    # where your MRI subdirector
 # The subjects and sessions to be used
 subjects=(\
     'sub_1' \
+    'sub_2' \
+    'sub_3' \
 )
 sessions=(\
     'plan_tsss_mc' \
