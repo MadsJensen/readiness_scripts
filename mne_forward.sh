@@ -2,7 +2,6 @@
 # http://imaging.mrc-cbu.cam.ac.uk/meg/AnalyzingData/MNE_ForwardSolution
 
 # variables
-
 datapath='/media/mje/KINGSTON/MEG_libet/Data'    # root directory for your MEG data
 MRIpath='/media/mje/KINGSTON/MEG_libet/Data/mri'    # where your MRI subdirectories are
 
@@ -14,11 +13,6 @@ sessions=(\
     'plan_tsss_mc' \
     'interupt_tsss_mc'\
 )
-
-## fresurfer names:
-#fs_subjects=(\
-    #'fs_sub_1' \
-#)
 
 ## setup the filename to be used
 nsubjects=${#subjects[*]}

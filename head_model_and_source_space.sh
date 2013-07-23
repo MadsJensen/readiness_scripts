@@ -1,6 +1,6 @@
-SUBJECTS_DIR='/projects/MINDLAB2011_24-MEG-readiness/scratch/mri/'    # root directory for MRI data
+SUBJECTS_DIR='/media/mje/KINGSTON/MEG_libet/Data/mri/'    # root directory for MRI data
 
-for SUBJECT in fs_sub_1 fs_sub_2 # use your list of subject names here
+for SUBJECT in fs_sub_1 # use your list of subject names here
 do
         # creates surfaces necessary for BEM head models
         mne_watershed_bem --overwrite --subject $SUBJECT
