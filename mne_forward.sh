@@ -2,16 +2,16 @@
 # http://imaging.mrc-cbu.cam.ac.uk/meg/AnalyzingData/MNE_ForwardSolution
 
 # variables
-datapath='/media/mje/KINGSTON/MEG_libet/Data'    # root directory for your MEG data
-MRIpath='/media/mje/KINGSTON/MEG_libet/Data/mri'    # where your MRI subdirectories are
+datapath='/projects/MINDLAB2011_24-MEG-readiness/scratch' # root directory for your MEG data
+MRIpath='/projects/MINDLAB2011_24-MEG-readiness/scratch/mri'    # where your MRI subdirectories are
 
 # The subjects and sessions to be used
 subjects=(\
-    'sub_1' \
     'sub_2' \
     'sub_3' \
 )
 sessions=(\
+    'classic_tsss_mc' \
     'plan_tsss_mc' \
     'interupt_tsss_mc'\
 )
@@ -25,7 +25,7 @@ lastsubj=`expr $nsubjects - 1`
 for m in `seq 0 $lastsubj` 
 do
   echo " "
-  echo " Computing forward solution for SUBJECT  ${fileList[m]}"
+  echo " Computing forward solution for SUBJECT:  ${subjects[m]}"
   echo " "
 
   
