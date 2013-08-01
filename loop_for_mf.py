@@ -18,18 +18,24 @@ for condition in conditions:
         trans_fname = "sub_" + str(sub_id) + "_%s_tsss_mc_trans.fif" % session
         trans_logname = "sub_" + str(sub_id) + "_%s_tsss_mc_trans.log" % session
         headpos_logname = "sub_" + str(sub_id) + "_%s_headpos.txt" % session
+        
+
+        badchannel_path = project_path + "/projects/MINDLAB2011_24-MEG-readiness/misc/Badchannels/"
+        badchannel_filename = 'sub_' + str(sub_id) + '_%s_badChans.csv' % session
+        bcFname = badchannel_path + badchannel_filename
+        badchannels = list(csv.reader(open(bcFname)))
 
         apply_maxfilter(raw_fname, 
                 tsss_fname,
                 origin=None 
                 frame='device'
-                bad=None
+                bad='%s' %badchannels
                 autobad='off'
                 skip=None
                 force=False
-                st=10, 
-                st_buflen=16.0
-                st_corr=0.96 
+                st=True, 
+                st_buflen=10.
+                st_corr=0.980 
                 mv_trans=None
                 mv_comp=True
                 mv_headpos=True
