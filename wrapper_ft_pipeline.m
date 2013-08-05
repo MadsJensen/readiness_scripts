@@ -15,12 +15,12 @@ eval(sprintf('save sub_%d_%s_preprocess_mag data_mag', subid, session));
 %
 %
 %% Find artifacts for all channels
-[arti_cfg] = auto_artifact_remove(subid, session, 'MEG', data)
+[artifact_cfg] = auto_artifact_remove(subid, session, 'MEG', data)
 %
 % remove artifacts for gradiometers
-data_no_arti_grad = ft_rejectartifact(arti_cfg, data_grad)
+data_no_arti_grad = ft_rejectartifact(artifact_cfg, data_grad)
 % remove artifact for magnotometers
-data_no_arti_mag = ft_rejectartifact(arti_cfg, data_mag)
+data_no_arti_mag = ft_rejectartifact(artifact_cfg, data_mag)
 %
 % save the grads results
 eval(sprintf('save sub_%d_%s_artifact_removed_grad data_no_arti_grad', subid, session));
