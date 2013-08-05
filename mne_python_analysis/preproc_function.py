@@ -26,9 +26,9 @@ baseline = (-3.5, -3.2)
 event_id = dict(press=1)
 
 
-def preproc_funcion(sub_id, session):
+def preproc_function(sub_id, session):
     """ 
-    This function preprocesse data
+    This function preprocessess data
 
     """
 
@@ -81,7 +81,7 @@ def preproc_funcion(sub_id, session):
     raw_ica = ica.pick_sources_raw(raw, include=None)
 
     # EPOCHS ####
-    events = mne.find_events(raw_ica)
+    events = mne.find_events(raw_ica, stim_channel="STI101")
     events_classic = []
     events_interupt = []
     for i in range(len(events)):

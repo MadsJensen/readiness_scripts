@@ -25,7 +25,7 @@ baseline = (-3.5, -3.2)
 event_id = dict(press=1)
 
 
-def preproc_funcion(sub_id, session):
+def preproc_function(sub_id, session):
     """ 
     This function preprocesse data
 
@@ -53,7 +53,7 @@ def preproc_funcion(sub_id, session):
     raw.notch_filter(np.arange(50, 101, 50), n_jobs=n_jobs, verbose=True)
 
     # EPOCHS ####
-    events = mne.find_events(raw)
+    events = mne.find_events(raw, stim_channel="STI101")
     events_classic = []
     events_interupt = []
     for i in range(len(events)):
@@ -104,4 +104,4 @@ def preproc_funcion(sub_id, session):
     # SAVE FILES ####
     raw.save(fname + '_tsss_mc_preproc.fif', overwrite=True)
     cov.save((fname + '_tsss_mc_cov.fif'))
-    epochs_ica.save(fname + '_tsss_mc_epochs.fif')
+    epochs_ica.save(fname + '_tsss_mc_epochsi_ica.fif')
