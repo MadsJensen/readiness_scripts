@@ -7,7 +7,7 @@ Created on Mon Jun  3 15:08:40 2013
 
 from mne import fiff
 import csv
-
+import mne
 
 def save_bad_chans(sub_id, session):
     """
@@ -18,8 +18,9 @@ def save_bad_chans(sub_id, session):
     
     raw = fiff.Raw(raw_fname, preload=False)
     bad_chans = raw.info['bads']
+    picks = mne.fiff.pick_types(raw.info, meg='grad', eeg=False, eog=False, stim=False, exclude='bads')
 
-    bc_list = [0]
+    bc_list = []
     for i in range(len(bad_chans)):
         bc_list.append(bad_chans[i][-4:])
     csv_writer = csv.writer(open(bad_chans_fname , 'wb'), delimiter=',').writerow           
@@ -31,7 +32,17 @@ def save_bad_chans(sub_id, session):
 
 
 conditions = ['plan', 'classic', 'interupt']
-subs = [6,7,8,9]
+subs = [1,2,3,4,5,6,7,8,9,10]
 for condition in conditions:
     for sub in subs:
         save_bad_chans(sub, condition)
+
+
+
+
+conditions = ['plan']
+subs = [1]
+for condition in conditions:
+    for sub in subs:
+        print "subs[sub], conditions[condition]"
+

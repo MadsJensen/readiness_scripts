@@ -1,16 +1,14 @@
 function [preproc_data_grad] = preproc_func(subId, session, Channels)
 
-
-
 cfg                         = [];
 cfg.dataset                 = ...
-  sprintf('sub_%d_%s_tsss_mc.fif', subId, session); 
+    sprintf('sub_%d_%s_tsss_mc.fif', subId, session);
 cfg.trialdef.prestim        = 3.5; % in seconds
 cfg.trialdef.poststim       = .5; % in seconds
 cfg.continuous              = 'yes';
 
 switch session
-    case 'interupt'
+    case 'interrupt'
         cfg.trialfun        = 'classic_select';
     otherwise
         cfg.trialfun        = 'classic_select';
@@ -27,7 +25,7 @@ cfg.lpfreq                  = 128;
 data_GRAD = ft_preprocessing(cfg);
 
 
-% downsample
+% Downsample
 cfg                         = [];
 cfg.resamplefs              = 256;
 cfg.demean                  = 'yes';
