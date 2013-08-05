@@ -81,22 +81,22 @@ y = np.concatenate(y)
 
 data_plan = epochs_plan.get_data()
 data_interupt_classic = epochs_interupt_classic.get_data()
-n_trials = 27
+n_trials = 19
 
 for i in range(n_trials):
-    foo = data_plan_cmb[i, :, :]
+    foo = data_plan[i, :, :]
     if i == 0:
         X = foo.reshape(-1)
     else:
         X = np.vstack([X, foo.reshape(-1)])
 
 for i in range(n_trials):
-    foo = data_int_cmb[i, :, :]
+    foo = data_classic[i, :, :]
     X = np.vstack([X, foo.reshape(-1)])
 
 y = np.concatenate((np.zeros(n_trials), np.ones(n_trials)))
 X2 = X*1e12
-
+     
 
 #### functions to moving average
 
@@ -120,6 +120,7 @@ def ma_datastruct(dataMatrix):
 
 
 def combine_grads(data):
+    from mne.layouts.layout import _merge_grad_data
     data_rms = np.empty([data.shape[0], data.shape[1]/2, data.shape[2]])
 
     for i in range(len(data)):
@@ -130,13 +131,20 @@ def combine_grads(data):
 
 
 
+cd '/home/mje/Projects/MEG_libet/Scripts/mne_python_analysis/'
 
-sessions  = ["plan", "interupt"]
-subs = [1]
+from preproc_function import preproc_funcion
+
+cd '/media/mje/KINGSTON/MEG_libet/Data/'
+
+sessions  = ["plan", "classic"]
+subs = [2]
 for sub in subs:
     for session in sessions:
-        f_load = "sub_%d_%s_epochs.fif" %(sub, session)
-        f_save = "sub_%d_%s_epochs" % (sub, session)
+        preproc_funcion(sub, session)
+        
+        f_load = "sub_%d_%s_tsss_mc_epochs.fif" %(sub, session)
+        f_save = "sub_%d_%s" % (sub, session)
         print f_load
         print f_save
 

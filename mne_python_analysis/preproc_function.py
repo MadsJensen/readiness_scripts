@@ -26,13 +26,15 @@ baseline = (-3.5, -3.2)
 event_id = dict(press=1)
 
 
-def preproc_funcion(subId, session):
+def preproc_funcion(sub_id, session):
     """ 
     This function preprocesse data
 
     """
+
+    # SETUP AND LOAD FILES ####
     # name with subject id & session name
-    fname = "sub_%d_%s" % (subId, session)
+    fname = "sub_%d_%s" % (sub_id, session)
 
     # load the raw fif
     print 'Loading raw file'
@@ -44,13 +46,14 @@ def preproc_funcion(subId, session):
     print 'Computing Covariance matrix'
     cov = mne.compute_raw_data_covariance(raw, picks=picks, reject=None)
 
+    # FILTER ####
     # filter raw, lp 128, bp at 50 & 100
     print 'Low pass filter'
     raw.filter(None, 128, n_jobs=n_jobs, verbose=True)
-    print 'band stop filter'
+    print 'Band stop filter'
     raw.notch_filter(np.arange(50, 101, 50), n_jobs=n_jobs, verbose=True)
 
-    # run ICA
+    # ICA ####
     print 'Run ICA'
     ica = ICA(n_components=0.90, n_pca_components=64, max_pca_components=100,
               noise_cov=None, random_state=0)
@@ -59,9 +62,13 @@ def preproc_funcion(subId, session):
 
     # decompose sources for raw data
     ica.decompose_raw(raw, start=start, stop=stop, picks=picks)
+
     corr = lambda x, y: np.array([pearsonr(a, y.ravel()) for a in x])[:, 0]
-    eog_scores_1 = ica.find_sources_raw(raw, target='EOG001', score_func=corr)
-    eog_scores_2 = ica.find_sources_raw(raw, target='EOG002', score_func=corr)
+
+    eog_scores_1 = ica.find_sources_raw(raw, target='EOG001',
+                                        score_func=corr)
+    eog_scores_2 = ica.find_sources_raw(raw, target='EOG002',
+                                        score_func=corr)
 
     # get maximum correlation index for EOG
     eog_source_idx_1 = np.abs(eog_scores_1).argmax()
@@ -73,6 +80,7 @@ def preproc_funcion(subId, session):
     # Restore sensor space data
     raw_ica = ica.pick_sources_raw(raw, include=None)
 
+    # EPOCHS ####
     events = mne.find_events(raw_ica)
     events_classic = []
     events_interupt = []
@@ -83,14 +91,17 @@ def preproc_funcion(subId, session):
             elif events[i, 2] == 1 and events[i - 1, 2] == 2:
                 events_interupt.append(i)
 
-    picks = mne.fiff.pick_types(raw_ica.info, meg='grad', eeg=False, eog=False,
-                                stim=False, exclude='bads')
+    picks = mne.fiff.pick_types(raw_ica.info, meg='grad', eeg=False, eog=True,
+                                emg=True, stim=False, exclude='bads')
 
-    reject = dict(grad=4000e-13)
-    epochs = mne.Epochs(raw, events[events_classic], event_id, tmin, tmax,
+    reject = dict(eog=150e-6, grad=4000e-13)
+    epochs = mne.Epochs(raw_ica, events[events_classic], event_id, tmin, tmax,
                         proj=True, picks=picks, baseline=baseline,
                         preload=False, reject=reject)
 
+    
+   
+    # SAVE FILES ####
     raw_ica.save(fname + '_tsss_mc_preproc_ica.fif', overwrite=True)
     cov.save((fname + '_tsss_mc_cov.fif'))
     epochs.save(fname + '_tsss_mc_epochs.fif')
