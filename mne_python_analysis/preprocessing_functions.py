@@ -137,9 +137,10 @@ def preprocess_raw(sub_id, session):
 
     # FILTER ####
     # filter raw, lp 128, bp at 50 & 100
-    steps = np.arange(50, 151, 50)
     raw.filter(None, 128, n_jobs=n_jobs, verbose=True)
-    print 'Band stop filter at: %s' % steps
+
+    steps = np.arange(50, 151, 50)
+    print 'Band stop filter at %s' % steps
     raw.notch_filter(steps, n_jobs=n_jobs, verbose=True)
 
     # ICA ####
@@ -164,7 +165,12 @@ def preprocess_raw(sub_id, session):
     eog_source_idx_2 = np.abs(eog_scores_2).argmax()
 
     # We now add the eog artifacts to the ica.exclusion list
-    ica.exclude += [eog_source_idx_1, eog_source_idx_2]
+    if eog_source_idx_1 ==  eog_source_idx_2:
+        ica.exclude = eog_source_idx_1
+    elif eog_source_idx_1 !=  eog_source_idx_2:
+        ica.exclude = [eog_source_idx_1, eog_source_idx_2]
+
+    print eog_source_idx_1, eog_source_idx_2
     print ica.exclude
 
     # Restore sensor space data
@@ -184,7 +190,7 @@ def preprocess_raw(sub_id, session):
     picks = mne.fiff.pick_types(raw_ica.info, meg='grad', eeg=False, eog=True,
                                 emg=True, stim=False, exclude='bads')
 
-    reject = dict(eog=150e-6, grad=4000e-13)
+    reject = dict(grad=4000e-13)
     epochs = mne.Epochs(raw_ica, events[events_classic], event_id, tmin, tmax,
                         proj=True, picks=picks, baseline=baseline,
                         preload=False, reject=reject)
