@@ -15,7 +15,6 @@ def mne_forward_wrapper(sub_id, \
     """    
     # Run mne_setup_forward_model
     fname = "fs_sub_%d" % sub_id
-    print fname
 
     cmd = ("mne_setup_forward_model --subject %s --surf --homog --ico %d " 
             % (fname, ico))
