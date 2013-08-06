@@ -166,9 +166,9 @@ def preprocess_raw(sub_id, session):
 
     # We now add the eog artifacts to the ica.exclusion list
     if eog_source_idx_1 ==  eog_source_idx_2:
-        ica.exclude = eog_source_idx_1
+        ica.exclude += [eog_source_idx_1]
     elif eog_source_idx_1 !=  eog_source_idx_2:
-        ica.exclude = [eog_source_idx_1, eog_source_idx_2]
+        ica.exclude += [eog_source_idx_1, eog_source_idx_2]
 
     print eog_source_idx_1, eog_source_idx_2
     print ica.exclude
