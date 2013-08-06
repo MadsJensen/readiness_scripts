@@ -7,16 +7,17 @@ Created on Tue Aug  6 11:43:52 2013
 import mne
 from mne.minimum_norm import make_inverse_operator, apply_inverse, \
                              write_inverse_operator
-sub_id = 2
-session = "classic"
+#sub_id = 2
+#session = "classic"
 
-def inverse_function(sub_id, sesseion):
+def inverse_function(sub_id, session):
     data_path = "/projects/MINDLAB2011_24-MEG-readiness/scratch/"
     fname = "sub_%d_%s_tsss_mc" %(sub_id, session)
     fname_epochs = data_path + fname + "_epochs.fif"
     fname_fwd_meg = data_path + fname + "_fwd.fif"
     fname_cov = data_path + fname + "_cov.fif"
-    fname_stcs = fname + "mne_dSPM_inverse.fif"
+    fname_inv = data_path + fname + "_inv.fif"
+    fname_stcs = fname + "_mne_dSPM_inverse"
     
     epochs = mne.read_epochs(fname_epochs)
     evoked = epochs.average()
@@ -40,8 +41,7 @@ def inverse_function(sub_id, sesseion):
     inverse_operator_meg = make_inverse_operator(info, forward_meg, noise_cov,
                                                   loose=0.2, depth=0.8)
     
-    write_inverse_operator('sample_audvis-meg-oct-6-inv.fif',
-                           inverse_operator_meg)
+    write_inverse_operator(fname_inv, inverse_operator_meg)
     
     # Compute inverse solution
     stcs = apply_inverse(evoked, inverse_operator_meg, lambda2, "dSPM",
