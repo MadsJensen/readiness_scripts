@@ -137,10 +137,10 @@ def preprocess_raw(sub_id, session):
 
     # FILTER ####
     # filter raw, lp 128, bp at 50 & 100
-    print 'Low pass filter'
+    steps = np.arange(50, 151, 50)
     raw.filter(None, 128, n_jobs=n_jobs, verbose=True)
-    print 'Band stop filter'
-    raw.notch_filter(np.arange(50, 101, 50), n_jobs=n_jobs, verbose=True)
+    print 'Band stop filter at: %s' % steps
+    raw.notch_filter(steps, n_jobs=n_jobs, verbose=True)
 
     # ICA ####
     print 'Run ICA'
