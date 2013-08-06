@@ -76,6 +76,7 @@ def preproc_funcion(sub_id, session):
 
     # We now add the eog artifacts to the ica.exclusion list
     ica.exclude += [eog_source_idx_1, eog_source_idx_2]
+    print ica.exclude
 
     # Restore sensor space data
     raw_ica = ica.pick_sources_raw(raw, include=None)
