@@ -57,9 +57,10 @@ y = np.concatenate(y)
 
 
 #### setup X & y ####
-data_picks = fiff.pick_types(epochs_plan.info, meg='grad', exclude='bads')
+data_picks = mne.fiff.pick_types(sub_8_plan.info, meg='grad', exclude='bads')
 cond_A = sub_8_classic.get_data()[:, data_picks, :]
 cond_B = sub_8_plan.get_data()[:, data_picks, :]
+cond_C = sub_8_interupt.get_data()[:, data_picks, :]
 n_trials = np.min([len(cond_A), len(cond_B)])
 
 X = np.concatenate([cond_A, cond_B])
@@ -75,7 +76,12 @@ for i in range(n_trials):
     foo = cond_B[i, :, :]
     X = np.vstack([X, foo.reshape(-1)])
 
-y = np.concatenate((np.zeros(n_trials), np.ones(n_trials)))
+for i in range(n_trials):
+    foo = cond_C[i, :, :]
+    X = np.vstack([X, foo.reshape(-1)])
+
+y = np.concatenate((np.zeros(n_trials), np.ones(n_trials), np.ones(n_trials)*2))
+#y = np.concatenate((np.zeros(n_trials), np.ones(n_trials)))
 X2 = X*1e12
      
 
@@ -95,16 +101,52 @@ C_param = estimator.best_params_['logistic__C']
 
 #### Logistic regression analysis ####
 
-logReg = linear_model.LogisticRegression(C = C_param)
+logReg = linear_model.LogisticRegression()
 cv = StratifiedKFold(y, 10)
 loo = LeaveOneOut(len(y))
 
-cross_score_LR = cross_val_score(logReg, X2, y, accuracy_score, cv = loo, 
+cross_score_LR = cross_val_score(logReg, X2, y, accuracy_score, cv = cv, 
                     n_jobs = n_jobs, verbose = True)
                     
 print "Cross val score: ", cross_score_LR.mean() 
 print "The different cross_scores: ", cross_score_LR
    
+
+score, permutation_score, pvalue = permutation_test_score(logReg, X2, y,
+        accuracy_score, cv = cv, n_permutations = 200, 
+        n_jobs = n_jobs, verbose = True)
+print 'Classification score:', score, 'p-value:', pvalue
+
+#### Naive bayes ####
+
+from sklearn.naive_bayes import GaussianNB
+ngb = GaussianNB()
+cv = StratifiedKFold(y, 10)
+loo = LeaveOneOut(len(y))
+
+cross_score_NB = cross_val_score(ngb, X2, y, accuracy_score, cv = loo, 
+                    n_jobs = n_jobs, verbose = True)
+                    
+print "Cross val score: ", cross_score_NB.mean() 
+print "The different cross_scores: ", cross_score_NB
+
+score, permutation_score, pvalue = permutation_test_score(ngb, X2, y,
+        accuracy_score, cv = cv, n_permutations = 200, 
+        n_jobs = n_jobs, verbose = True)
+print 'Classification score:', score, 'p-value:', pvalue
+
+#### SVM ####
+
+from sklearn.svm import SVC
+svc = SVC()
+cv = StratifiedKFold(y, 10)
+loo = LeaveOneOut(len(y))
+
+cross_score_SVM = cross_val_score(svc, X2, y, accuracy_score, cv = loo, 
+                    n_jobs = n_jobs, verbose = True)
+                    
+print "Cross val score: ", cross_score_SVM.mean() 
+print "The different cross_scores: ", cross_score_SVM
 
 
 
