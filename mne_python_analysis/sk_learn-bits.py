@@ -7,6 +7,7 @@ Created on Wed Aug  7 09:55:58 2013
 
 import scipy.io as sio
 import numpy as np
+import mne
 from sklearn import linear_model
 from sklearn.cross_validation import StratifiedKFold, permutation_test_score
 from sklearn.cross_validation import  cross_val_score
@@ -56,9 +57,12 @@ y = np.concatenate(y)
 
 
 #### setup X & y ####
-cond_A = sub_8_classic.get_data()
-cond_B = sub_8_plan.get_data()
+data_picks = fiff.pick_types(epochs_plan.info, meg='grad', exclude='bads')
+cond_A = sub_8_classic.get_data()[:, data_picks, :]
+cond_B = sub_8_plan.get_data()[:, data_picks, :]
 n_trials = np.min([len(cond_A), len(cond_B)])
+
+X = np.concatenate([cond_A, cond_B])
 
 for i in range(n_trials):
     foo = cond_A[i, :, :]
