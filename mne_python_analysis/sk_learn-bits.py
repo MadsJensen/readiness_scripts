@@ -24,7 +24,7 @@ n_jobs = 8
 
 
 ### load data ####
-sessions  = ["plan", "classic"]
+sessions  = ["plan", "classic", "interupt"]
 subs = [8]
 for sub in subs:
     for session in sessions:
@@ -36,6 +36,15 @@ for sub in subs:
         epochs = mne.read_epochs(f_load)
         exec("%s=%s" % (f_save, "epochs"))
 
+
+#### crop & resample ####
+sub_8_classic.crop(tmin=-3, tmax=0)
+sub_8_plan.crop(tmin=-3, tmax=0)
+sub_8_interupt.crop(tmin=-3, tmax=0)
+
+sub_8_classic.resample(sfreq=200, n_jobs=n_jobs)
+sub_8_plan.resample(sfreq=200, n_jobs=n_jobs)
+sub_8_interupt.resample(sfreq=200, n_jobs=n_jobs)
 
 #### MVPA ####
 epochs_list = [epochs_plan[k] for k in event_id]
@@ -90,7 +99,7 @@ X2 = X*1e12
 logistic = linear_model.LogisticRegression()
 pipe = Pipeline(steps=[('logistic', logistic)])
 
-Cs = np.logspace(-100, 100, 20)
+Cs = np.logspace(-100, 100, 10)
 #Parameters of pipelines can be set using ‘__’ separated parameter names:
 
 estimator = GridSearchCV(pipe, dict(logistic__C=Cs))
@@ -131,7 +140,7 @@ print "Cross val score: ", cross_score_NB.mean()
 print "The different cross_scores: ", cross_score_NB
 
 score, permutation_score, pvalue = permutation_test_score(ngb, X2, y,
-        accuracy_score, cv = cv, n_permutations = 200, 
+        accuracy_score, cv = loo, n_permutations = 200, 
         n_jobs = n_jobs, verbose = True)
 print 'Classification score:', score, 'p-value:', pvalue
 
