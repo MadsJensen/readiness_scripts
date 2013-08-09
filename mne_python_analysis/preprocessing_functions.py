@@ -110,11 +110,11 @@ def inverse_function(sub_id, session):
     write_inverse_operator(fname_inv, inverse_operator_meg)
 
     # Compute inverse solution
-    stcs = apply_inverse(evoked, inverse_operator_meg, lambda2, "dSPM",
+    stc = apply_inverse(evoked, inverse_operator_meg, lambda2, "dSPM",
                          pick_normal=False)
 
     # Save result in stc files
-    stcs.save(fname_stcs)
+    stc.save(fname_stcs)
 
 
 def preprocess_raw(sub_id, session):
@@ -126,7 +126,7 @@ def preprocess_raw(sub_id, session):
     fname = "sub_%d_%s" % (sub_id, session)
 
     # load the raw fif
-    print 'Loading raw file'
+    print '\\nnLoading raw file'
     raw = fiff.Raw(fname + "_tsss_mc.fif", preload=True)
 
     picks = mne.fiff.pick_types(raw.info, meg=True, eeg=False, eog=False,
@@ -140,11 +140,11 @@ def preprocess_raw(sub_id, session):
     raw.filter(None, 128, n_jobs=n_jobs, verbose=True)
 
     steps = np.arange(50, 151, 50)
-    print 'Band stop filter at %s' % steps
+    print '\nBand stop filter at %s' % steps
     raw.notch_filter(steps, n_jobs=n_jobs, verbose=True)
 
     # ICA ####
-    print 'Run ICA'
+    print '\nRun ICA'
     ica = ICA(n_components=0.90, n_pca_components=64, max_pca_components=100,
               noise_cov=None, random_state=0)
 
@@ -187,7 +187,7 @@ def preprocess_raw(sub_id, session):
             elif events[i, 2] == 1 and events[i - 1, 2] == 2:
                 events_interupt.append(i)
 
-    picks = mne.fiff.pick_types(raw_ica.info, meg='grad', eeg=False, eog=True,
+    picks = mne.fiff.pick_types(raw_ica.info, meg=True, eeg=False, eog=False,
                                 emg=True, stim=False, exclude='bads')
 
     reject = dict(grad=4000e-13)

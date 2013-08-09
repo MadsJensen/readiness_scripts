@@ -5,6 +5,7 @@ Created on Wed Aug  7 09:55:58 2013
 @author: mje
 """
 
+import scipy.io as sio
 import numpy as np
 import mne
 from sklearn import linear_model
@@ -12,13 +13,19 @@ from sklearn.cross_validation import StratifiedKFold, permutation_test_score
 from sklearn.cross_validation import  cross_val_score
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import RandomizedLogisticRegression
+from sklearn.externals import joblib
 from sklearn.grid_search import GridSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.cross_validation import LeaveOneOut, train_test_split
-
+from sklearn.metrics import accuracy_score
+from sklearn.cross_validation import LeaveOneOut
+from sklearn import preprocessing
 
 n_jobs = 8
 
+
+import os
+## change data files dir
+os.chdir('/projects/MINDLAB2011_24-MEG-readiness/scratch')
 
 ### load data ####
 sessions  = ["plan", "classic", "interupt"]
@@ -39,14 +46,14 @@ sub_8_classic.crop(tmin=-3, tmax=0)
 sub_8_plan.crop(tmin=-3, tmax=0)
 sub_8_interupt.crop(tmin=-3, tmax=0)
 
-sub_8_classic.resample(sfreq=200, n_jobs=n_jobs)
-sub_8_plan.resample(sfreq=200, n_jobs=n_jobs)
-sub_8_interupt.resample(sfreq=200, n_jobs=n_jobs)
+sub_8_classic.resample(sfreq=500, n_jobs=n_jobs)
+sub_8_plan.resample(sfreq=500, n_jobs=n_jobs)
+sub_8_interupt.resample(sfreq=500, n_jobs=n_jobs)
 
 #### MVPA ####
-epochs_list = [epochs_plan[k] for k in event_id]
-data_picks = fiff.pick_types(epochs_plan.info, meg='grad', exclude ='bads')
-X = [e.get_data()[:, data_picks, :] for e in epochs_list]
+#epochs_list = [epochs_plan[k] for k in event_id]
+#data_picks = fiff.pick_types(epochs_plan.info, meg='grad', exclude ='bads')
+#X = [e.get_data()[:, data_picks, :] for e in epochs_list]
 
 
 n_times = len(epochs_plan.times)
@@ -68,6 +75,8 @@ cond_A = sub_8_classic.get_data()[:, data_picks, :]
 cond_B = sub_8_plan.get_data()[:, data_picks, :]
 cond_C = sub_8_interupt.get_data()[:, data_picks, :]
 n_trials = np.min([len(cond_A), len(cond_B)])
+
+X = np.concatenate([cond_A, cond_B])
 
 for i in range(n_trials):
     foo = cond_A[i, :, :]
@@ -125,17 +134,16 @@ print 'Classification score:', score, 'p-value:', pvalue
 
 from sklearn.naive_bayes import GaussianNB
 ngb = GaussianNB()
-cv = StratifiedKFold(y, 20)
-loo = LeaveOneOut(len(y))
 
-cross_score_NB = cross_val_score(ngb, X2, y, accuracy_score, cv = cv, 
+
+cross_score_NB = cross_val_score(ngb, X_scl, y, accuracy_score, cv = cv, 
                     n_jobs = n_jobs, verbose = True)
                     
 print "Cross val score: ", cross_score_NB.mean() 
 print "The different cross_scores: ", cross_score_NB
 
-score, permutation_score, pvalue = permutation_test_score(ngb, X2, y,
-        accuracy_score, cv = cv, n_permutations = 200, 
+score_NB, permutation_score_NB, pvalue_NB = permutation_test_score(ngb, X_scl, y,
+        accuracy_score, cv = cv, n_permutations = 1000, 
         n_jobs = n_jobs, verbose = True)
 print 'Classification score:', score, 'p-value:', pvalue
 
@@ -154,9 +162,6 @@ print "The different cross_scores: ", cross_score_SVM
 
 
 
-#### RandomizedLogisticRegression ####
-randomized_logistic = RandomizedLogisticRegression()
-X2_train, X2_test, y_train, y_test = train_test_split(
-                    X2, y, test_size=0.2, random_state=42)
 
-randomized_logistic.fit(X2, y)
+
+
