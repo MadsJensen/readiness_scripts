@@ -18,9 +18,9 @@ def save_bad_chans(sub_id, session):
     
     raw = fiff.Raw(raw_fname, preload=False)
     bad_chans = raw.info['bads']
-    picks = mne.fiff.pick_types(raw.info, meg='grad', eeg=False, eog=False, stim=False, exclude='bads')
+    picks = mne.fiff.pick_types(raw.info, meg=True, eeg=False, eog=False, stim=False, exclude='bads')
 
-    bc_list = []
+    bc_list = [0]
     for i in range(len(bad_chans)):
         bc_list.append(bad_chans[i][-4:])
     csv_writer = csv.writer(open(bad_chans_fname , 'wb'), delimiter=',').writerow           
@@ -32,17 +32,14 @@ def save_bad_chans(sub_id, session):
 
 
 conditions = ['plan', 'classic', 'interupt']
-subs = [1,2,3,4,5,6,7,8,9,10]
+subs = [1, 2, 3, 4, 5, 6, 7, 8 ,9, 10, 11, 12, 13, 14, 15, 16]
 for condition in conditions:
     for sub in subs:
         save_bad_chans(sub, condition)
 
 
-
-
-conditions = ['plan']
-subs = [1]
+conditions = ['classic']
+subs = [2]
 for condition in conditions:
     for sub in subs:
-        print "subs[sub], conditions[condition]"
-
+        save_bad_chans(sub, condition)
