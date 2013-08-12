@@ -131,11 +131,11 @@ def combine_grads(data):
 
 
 
-cd '/home/mje/Projects/MEG_libet/Scripts/mne_python_analysis/'
+#cd '/home/mje/Projects/MEG_libet/Scripts/mne_python_analysis/'
 
 from preproc_function import preproc_funcion
 
-cd '/media/mje/KINGSTON/MEG_libet/Data/'
+#cd '/media/mje/KINGSTON/MEG_libet/Data/'
 
 sessions  = ["plan", "classic"]
 subs = [2]

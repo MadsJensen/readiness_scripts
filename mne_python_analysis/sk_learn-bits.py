@@ -23,6 +23,8 @@ from sklearn.cross_validation import LeaveOneOut
 from sklearn import preprocessing
 from sklearn import lda
 
+from analyse_functions import combine_grads
+
 n_jobs = 8
 
 
@@ -32,7 +34,7 @@ os.chdir('/projects/MINDLAB2011_24-MEG-readiness/scratch')
 
 ### load data ####
 sessions  = ["plan", "classic", "interupt"]
-subs = [8]
+subs = [2]
 for sub in subs:
     for session in sessions:
         
@@ -46,14 +48,14 @@ for sub in subs:
 
 #### crop & resample ####
 
-sub_8_classic.resample(sfreq=500, n_jobs=n_jobs)
-sub_8_plan.resample(sfreq=500, n_jobs=n_jobs)
-sub_8_interupt.resample(sfreq=500, n_jobs=n_jobs)
+sub_2_classic.resample(sfreq=500, n_jobs=n_jobs)
+sub_2_plan.resample(sfreq=500, n_jobs=n_jobs)
+sub_2_interupt.resample(sfreq=500, n_jobs=n_jobs)
 
 baseline = (-3.5, -3.1)
-cmb_A = combine_grads(sub_8_classic, baseline=baseline)
-cmb_B = combine_grads(sub_8_plan, baseline=baseline)
-cmb_C = combine_grads(sub_8_interupt, baseline=baseline)
+cmb_A = combine_grads(sub_2_classic, baseline=baseline)
+cmb_B = combine_grads(sub_2_plan, baseline=baseline)
+cmb_C = combine_grads(sub_2_interupt, baseline=baseline)
 
 #crop to -3 & 0
 cmb_A = cmb_A[:, :, 250:-250]
@@ -88,12 +90,14 @@ cmb_C = cmb_C[:, :, 250:-250]
 vertex_parietal = ["Vertex", "parietal"]
 selection = mne.viz._clean_names(mne.read_selection(vertex_parietal))
 
-data_picks = mne.fiff.pick_types(sub_8_plan.info, meg='grad', exclude='bads',
+data_picks = mne.fiff.pick_types(sub_2_plan.info, meg='grad', exclude='bads',
                         selection = selection)
-cond_A = sub_8_classic.get_data()[:, data_picks, :]
-cond_B = sub_8_plan.get_data()[:, data_picks, :]
-cond_C = sub_8_interupt.get_data()[:, data_picks, :]
-n_trials = np.min([len(cond_A), len(cond_B)])
+#cond_A = sub_8_classic.get_data()[:, data_picks, :]
+#cond_B = sub_8_plan.get_data()[:, data_picks, :]
+#cond_C = sub_8_interupt.get_data()[:, data_picks, :]
+
+
+n_trials = np.min([len(cmb_A), len(cmb_B), len(cmb_C)])
 
 for i in range(n_trials):
     foo = cmb_A[i, :, :]
@@ -110,39 +114,38 @@ for i in range(n_trials):
     foo = cmb_C[i, :, :]
     X = np.vstack([X, foo.reshape(-1)])
 
-#y = np.concatenate((np.zeros(n_trials), np.ones(n_trials), np.ones(n_trials)*2))
-y = np.concatenate((np.zeros(n_trials), np.ones(n_trials)))
+y = np.concatenate((np.zeros(n_trials), np.ones(n_trials), np.ones(n_trials)*2))
+#y = np.concatenate((np.zeros(n_trials), np.ones(n_trials)))
 X2 = X*1e12
 X_scl = preprocessing.scale(X)
 
-#### find C_param ####
+##### find C_param ####
 
-logistic = linear_model.LogisticRegression()
-pipe = Pipeline(steps=[('logistic', logistic)])
+#logistic = linear_model.LogisticRegression()
+#pipe = Pipeline(steps=[('logistic', logistic)])
 
-Cs = np.logspace(-100, 100, 10)
+#Cs = np.logspace(-100, 100, 10)
 #Parameters of pipelines can be set using ‘__’ separated parameter names:
 
-estimator = GridSearchCV(pipe, dict(logistic__C=Cs), n_jobs = 8)
-estimator.fit(X_scl, y)
+#estimator = GridSearchCV(pipe, dict(logistic__C=Cs), n_jobs = 8)
+#estimator.fit(X_scl, y)
 
 #C_param = estimator.best_params_['logistic__C']
 
 
 #### Logistic regression analysis ####
 
-logReg = linear_model.LogisticRegression()
+#logReg = linear_model.LogisticRegression()
 cv = StratifiedKFold(y, 10)
 loo = LeaveOneOut(len(y))
  
 
-cross_score_LR = cross_val_score(logReg, X_scl, y, accuracy_score, cv = loo, 
-                    n_jobs = n_jobs, verbose = True)
+#cross_score_LR = cross_val_score(logReg, X_scl, y, accuracy_score, cv = loo, 
+#                    n_jobs = n_jobs, verbose = True)
                     
-print "Cross val score: ", cross_score_LR.mean() 
-print "The different cross_scores: ", cross_score_LR
+#print "Cross val score: ", cross_score_LR.mean() 
+#print "The different cross_scores: ", cross_score_LR
 
-scores["LR": cross_score_LR.mean()]   
 
 #score, permutation_score, pvalue = permutation_test_score(logReg, X2, y,
 
@@ -172,26 +175,26 @@ cross_score_NB = cross_val_score(ngb, X_scl, y, accuracy_score, cv = loo,
 print "Cross val score: ", cross_score_NB.mean() 
 print "The different cross_scores: ", cross_score_NB
 
-#score_NB, permutation_score_NB, pvalue_NB = permutation_test_score(ngb, X_scl, y,
-#        accuracy_score, cv = cv, n_permutations = 1000, 
-#        n_jobs = n_jobs, verbose = True)
-#print 'Classification score:', score_NB, 'p-value:', pvalue_NB
-
-#### SVM ####
-from sklearn.svm import LinearSVC
-svc = LinearSVC()
-
-cross_score_SVM = cross_val_score(svc, X_scl, y, accuracy_score, cv = loo, 
-                    n_jobs = n_jobs, verbose = True)
-                    
-print "Cross val score: ", cross_score_SVM.mean() 
-print "The different cross_scores: ", cross_score_SVM
-
-
-score_SVM, permutation_score_SVM, pvalue_SVM = permutation_test_score(ngb, X_scl, y,
+score_NB, permutation_score_NB, pvalue_NB = permutation_test_score(ngb, X_scl, y,
         accuracy_score, cv = cv, n_permutations = 1000, 
         n_jobs = n_jobs, verbose = True)
-print 'Classification score:', score_SVM, 'p-value:', pvalue_SVM
+print 'Classification score:', score_NB, 'p-value:', pvalue_NB
+
+#### SVM ####
+#from sklearn.svm import LinearSVC
+#svc = LinearSVC()
+
+#cross_score_SVM = cross_val_score(svc, X_scl, y, accuracy_score, cv = loo, 
+#                    n_jobs = n_jobs, verbose = True)
+                    
+#print "Cross val score: ", cross_score_SVM.mean() 
+#print "The different cross_scores: ", cross_score_SVM
+
+
+#score_SVM, permutation_score_SVM, pvalue_SVM = permutation_test_score(ngb, X_scl, y,
+#        accuracy_score, cv = cv, n_permutations = 1000, 
+#        n_jobs = n_jobs, verbose = True)
+#print 'Classification score:', score_SVM, 'p-value:', pvalue_SVM
 
 
 
