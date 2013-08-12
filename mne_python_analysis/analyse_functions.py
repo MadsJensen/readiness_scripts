@@ -28,3 +28,45 @@ def combine_grads(epochs, baseline=(-3.5, -3.2)):
 
     return data_rms
 
+
+
+sessions  = ["plan", "interupt"]
+subs = [2]
+dummy = 0
+X = []
+
+for session in sessions:
+    for sub in subs:
+    
+        f_load = "sub_%d_%s_tsss_mc_epochs.fif" %(sub, session)
+        print f_load
+
+        epochs = mne.read_epochs(f_load)        
+        evk = epochs.average()
+        
+        foo = evk.data[:, 500:-500]       
+        if dummy == 0:
+            X = foo.reshape(-1)
+            dummy = 1
+        else:
+            X = np.vstack([X, foo.reshape(-1)])
+
+        
+        
+        exec("%s=%s" % (f_save, "epochs"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
