@@ -29,13 +29,6 @@ def combine_grads(epochs, baseline=(-3.5, -3.2)):
     return data_rms
 
 
-
-
-
-
-
-
-
 def global_RMS(sub, session, baseline=500, selection="Vertex"):
     """ make global RMS 
         baseline is in indexes
