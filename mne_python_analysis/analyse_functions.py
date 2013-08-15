@@ -43,19 +43,21 @@ def global_RMS(sub, session, baseline=500, selection="Vertex"):
     
     f_load = "sub_%d_%s_tsss_mc_epochs.fif" %(sub, session)
     epochs = mne.read_epochs(f_load)
-    evoked = epochs.average()
-    
-    selection = mne.viz._clean_names(mne.read_selection(selection))
-    data_picks = mne.epochs.pick_types(epochs.info, meg='grad', exclude='bads', 
-                                       selection = selection)
-    
-    data = evoked.data[data_picks, :]
-    data = np.sqrt(np.square(data))
+        
+    if selection is not None:
+        selection = mne.viz._clean_names(mne.read_selection(selection))
+        data_picks = mne.epochs.pick_types(epochs.info, meg='grad', 
+                                           exclude='bads', selection = None)
+    else:
+        data_picks = mne.epochs.pick_types(epochs.info, meg='grad', 
+                                           exclude='bads')
+
+    data = epochs.get_data()[:, data_picks, :]
+    data = np.sqrt(np.square(data.mean(axis=0)))
     data = data.mean(axis = 0)
     baseline_std = data[:baseline].std().mean()
     
-    #grms = data/baseline_std
-    grms = data
+    grms = data/baseline_std
 
     return grms
     
