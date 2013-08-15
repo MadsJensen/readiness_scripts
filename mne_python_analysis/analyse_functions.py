@@ -30,32 +30,13 @@ def combine_grads(epochs, baseline=(-3.5, -3.2)):
 
 
 
-sessions  = ["plan", "interupt"]
-subs = [2]
-dummy = 0
-X = []
-
-for session in sessions:
-    for sub in subs:
-    
-        f_load = "sub_%d_%s_tsss_mc_epochs.fif" %(sub, session)
-        print f_load
-
-        epochs = mne.read_epochs(f_load)        
-        evk = epochs.average()
-        
-        foo = evk.data[:, 500:-500]       
-        if dummy == 0:
-            X = foo.reshape(-1)
-            dummy = 1
-        else:
-            X = np.vstack([X, foo.reshape(-1)])
 
 
 
 
 
-def global_RMS(sub, session, baseline=500):
+
+def global_RMS(sub, session, baseline=500, selection="Vertex"):
     """ make global RMS 
         baseline is in indexes
     """
@@ -64,7 +45,7 @@ def global_RMS(sub, session, baseline=500):
     epochs = mne.read_epochs(f_load)
     evoked = epochs.average()
     
-    selection = mne.viz._clean_names(mne.read_selection("Vertex"))
+    selection = mne.viz._clean_names(mne.read_selection(selection))
     data_picks = mne.epochs.pick_types(epochs.info, meg='grad', exclude='bads', 
                                        selection = selection)
     
@@ -73,8 +54,9 @@ def global_RMS(sub, session, baseline=500):
     data = data.mean(axis = 0)
     baseline_std = data[:baseline].std().mean()
     
-    grms = data/baseline_std
-    
+    #grms = data/baseline_std
+    grms = data
+
     return grms
     
 
