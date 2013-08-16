@@ -199,3 +199,20 @@ def preprocess_raw(sub_id, session):
     raw_ica.save(fname + '_tsss_mc_preproc_ica.fif', overwrite=True)
     cov.save((fname + '_tsss_mc_cov.fif'))
     epochs.save(fname + '_tsss_mc_epochs.fif')
+
+
+def evok_epochs(sub_id, session):
+    """ load a epoched file and average it and save the evoked file
+    """
+    fname = "sub_%d_%s" % (sub_id, session)
+    f_load = fname + "_tsss_mc_epochs.fif"
+    f_save = fname + "_tsss_mc_evk.fif"
+    epochs = mne.read_epochs(f_load)
+
+    evoked = epochs.average()
+    evoked.comment = session
+    evoked = mne.fiff.pick_types_evoked(evoked, meg='grad', exclude='bads')
+    evoked.resample(sfreq=250)
+    evoked.save(f_save)
+    
+    
