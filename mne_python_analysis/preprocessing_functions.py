@@ -216,3 +216,56 @@ def evok_epochs(sub_id, session):
     evoked.save(f_save)
     
     
+    
+def preprocess_raw_ica_only(sub_id, session):
+    """ This function removes the ICA component that correlates woth the 
+    EOG channel(s) best.
+    No filtering or downsampling is applied!
+    """
+
+    # SETUP AND LOAD FILES ####
+    # name with subject id & session name
+    fname = "sub_%d_%s" % (sub_id, session)
+
+    # load the raw fif
+    print '\nLoading raw file'
+    raw = fiff.Raw(fname + "_tsss_mc.fif", preload=True)
+
+    picks = mne.fiff.pick_types(raw.info, meg=True, eeg=False, eog=False,
+                                stim=False, exclude='bads')
+
+    # ICA ####
+    print '\nRun ICA'
+    ica = ICA(n_components=0.90, n_pca_components=64, max_pca_components=100,
+              noise_cov=None, random_state=0)
+
+    start, stop = None, None
+
+    # decompose sources for raw data
+    ica.decompose_raw(raw, start=start, stop=stop, picks=picks)
+
+    corr = lambda x, y: np.array([pearsonr(a, y.ravel()) for a in x])[:, 0]
+
+    eog_scores_1 = ica.find_sources_raw(raw, target='EOG001',
+                                        score_func=corr)
+    eog_scores_2 = ica.find_sources_raw(raw, target='EOG002',
+                                        score_func=corr)
+
+    # get maximum correlation index for EOG
+    eog_source_idx_1 = np.abs(eog_scores_1).argmax()
+    eog_source_idx_2 = np.abs(eog_scores_2).argmax()
+
+    # We now add the eog artifacts to the ica.exclusion list
+    if eog_source_idx_1 ==  eog_source_idx_2:
+        ica.exclude += [eog_source_idx_1]
+    elif eog_source_idx_1 !=  eog_source_idx_2:
+        ica.exclude += [eog_source_idx_1, eog_source_idx_2]
+
+    print eog_source_idx_1, eog_source_idx_2
+    print ica.exclude
+
+    # Restore sensor space data
+    raw_ica = ica.pick_sources_raw(raw, include=None)
+
+    # SAVE FILES ####
+    raw_ica.save(fname + '_tsss_mc_preproc_ica.fif', overwrite=True)
