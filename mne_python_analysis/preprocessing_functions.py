@@ -21,7 +21,7 @@ n_jobs = 8  # number of processers that mne & scikit-learn can use
 # Epoch definitions
 tmin, tmax, event_id = -3.5, 0.5, 1
 # baseline time
-baseline = (-3.5, -3.2)
+baseline = (-3.5, -3.3)
 # filesto reject
 
 # events to get
@@ -30,11 +30,10 @@ event_id = dict(press=1)
 logger = logging.getLogger('mne')
 
 
-def mne_forward_wrapper(sub_id,
-                        sessions=["classic", "plan", "interupt"],
-                        ico=4, mindist=5,  spacing=5,
-                        datapath='/projects/MINDLAB2011_24-MEG-readiness/scratch',
-                        MRIpath='/projects/MINDLAB2011_24-MEG-readiness/scratch/mri'):
+def mne_forward_wrapper(sub_id, sessions=["classic", "plan", "interupt"], ico=4,
+                        mindist=5,spacing=5,
+                        datapath='/media/mje/My_Book/Data/MEG/MEG_libet/sub_2_tests',
+                        MRIpath='/media/mje/My_Book/Data/MEG/MEG_libet/sub_2_tests/mri'):
     """ calls mne_setup_forward_model
     """
     # Run mne_setup_forward_model
@@ -43,7 +42,7 @@ def mne_forward_wrapper(sub_id,
     cmd = ("mne_setup_forward_model --subject %s --surf --homog --ico %d "
            % (fname, ico))
 
-    st = os.system(cmd)
+#    st = os.system(cmd)
 
     # run mne_do_forward_model
     bem = MRIpath + "/%s/bem/%s-5120-bem-sol-fif" % (fname, fname)
@@ -54,30 +53,20 @@ def mne_forward_wrapper(sub_id,
         meas = datapath + "/sub_%d_%s_tsss_mc.fif" % (sub_id, session)
         fwd = datapath + "/sub_%d_%s_tsss_mc_fwd.fif" % (sub_id, session)
 
-        cmd = ("mne_do_forward_solution \
-                --overwrite \
-                --subject %s\
-                --mindist %d \
-                --spacing %d \
-                --megonly \
-                --bem %s \
-                --src %s \
-                --meas %s \
-                --fwd %s"
-               % (fname, mindist, spacing, bem, src, meas, fwd))
+        cmd = ("mne_do_forward_solution --overwrite --subject %s --mindist %d --spacing %d --megonly --bem %s --src %s --meas %s --fwd %s" % (fname, mindist, spacing, bem, src, meas, fwd))
 
         logger.info('Running mne_do_forward_model: %s ' % cmd)
         st = os.system(cmd)
-        if st != 0:
-            raise RuntimeError("mne_do_forward_model returned" +
-                               "non-zero exit status %d" % st)
-        logger.info('[done]')
+#        if st != 0:
+#            raise RuntimeError("mne_do_forward_model returned" +
+#                               "non-zero exit status %d" % st)
+#        logger.info('[done]')
 
 
 def inverse_function(sub_id, session):
     """ Will calculate the inverse model based dSPM
     """
-    data_path = "/projects/MINDLAB2011_24-MEG-readiness/scratch/"
+    data_path = "/media/mje/My_Book/Data/MEG/MEG_libet/sub_2_tests"
     fname = "sub_%d_%s_tsss_mc" % (sub_id, session)
     fname_epochs = data_path + fname + "_epochs.fif"
     fname_fwd_meg = data_path + fname + "_fwd.fif"
@@ -111,7 +100,7 @@ def inverse_function(sub_id, session):
 
     # Compute inverse solution
     stc = apply_inverse(evoked, inverse_operator_meg, lambda2, "dSPM",
-                         pick_normal=False)
+                        pick_normal=False)
 
     # Save result in stc files
     stc.save(fname_stcs)
@@ -126,7 +115,7 @@ def preprocess_raw(sub_id, session):
     fname = "sub_%d_%s" % (sub_id, session)
 
     # load the raw fif
-    print '\\nnLoading raw file'
+    print '\nLoading raw file'
     raw = fiff.Raw(fname + "_tsss_mc.fif", preload=True)
 
     picks = mne.fiff.pick_types(raw.info, meg=True, eeg=False, eog=False,
@@ -139,9 +128,9 @@ def preprocess_raw(sub_id, session):
     # filter raw, lp 128, bp at 50 & 100
     raw.filter(None, 128, n_jobs=n_jobs, verbose=True)
 
-    steps = np.arange(50, 151, 50)
-    print '\nBand stop filter at %s' % steps
-    raw.notch_filter(steps, n_jobs=n_jobs, verbose=True)
+#    steps = np.arange(50, 151, 50)
+#    print '\nBand stop filter at %s' % steps
+#    raw.notch_filter(steps, n_jobs=n_jobs, verbose=True)
 
     # ICA ####
     print '\nRun ICA'
@@ -165,9 +154,9 @@ def preprocess_raw(sub_id, session):
     eog_source_idx_2 = np.abs(eog_scores_2).argmax()
 
     # We now add the eog artifacts to the ica.exclusion list
-    if eog_source_idx_1 ==  eog_source_idx_2:
+    if eog_source_idx_1 == eog_source_idx_2:
         ica.exclude += [eog_source_idx_1]
-    elif eog_source_idx_1 !=  eog_source_idx_2:
+    elif eog_source_idx_1 != eog_source_idx_2:
         ica.exclude += [eog_source_idx_1, eog_source_idx_2]
 
     print eog_source_idx_1, eog_source_idx_2
@@ -196,9 +185,9 @@ def preprocess_raw(sub_id, session):
                         preload=False, reject=reject)
 
     # SAVE FILES ####
-    raw_ica.save(fname + '_tsss_mc_preproc_ica.fif', overwrite=True)
+    raw_ica.save(fname + '_tsss_mc_ica.fif', overwrite=True)
     cov.save((fname + '_tsss_mc_cov.fif'))
-    epochs.save(fname + '_tsss_mc_epochs.fif')
+    epochs.save(fname + '_tsss_mc_ica_epochs.fif')
 
 
 def evok_epochs(sub_id, session):
@@ -258,6 +247,7 @@ def preprocess_raw_ica_only(sub_id, session):
     # We now add the eog artifacts to the ica.exclusion list
     if eog_source_idx_1 ==  eog_source_idx_2:
         ica.exclude += [eog_source_idx_1]
+
     elif eog_source_idx_1 !=  eog_source_idx_2:
         ica.exclude += [eog_source_idx_1, eog_source_idx_2]
 
@@ -269,3 +259,58 @@ def preprocess_raw_ica_only(sub_id, session):
 
     # SAVE FILES ####
     raw_ica.save(fname + '_tsss_mc_preproc_ica.fif', overwrite=True)
+    
+
+def make_events_files(sub_id, session):
+    """ This function read in a fiff file and write out a event file
+    """
+
+    # SETUP AND LOAD FILES ####
+    # name with subject id & session
+    fname = "sub_%d_%s" % (sub_id, session)
+
+    # load the raw fif
+    print '\nLoading raw file'
+    raw = fiff.Raw(fname + "_tsss_mc.fif", preload=False)
+
+    # EPOCHS ####
+    events = mne.find_events(raw, stim_channel="STI101")
+    events_classic = []
+    events_interupt = []
+    for i in range(len(events)):
+        if i > 0:
+            if events[i, 2] == 1 and events[i - 1, 2] == 1:
+                events_classic.append(i)
+            elif events[i, 2] == 1 and events[i - 1, 2] == 2:
+                events_interupt.append(i)
+   
+    if len(events_classic) > 0:
+        outname = "sub_%d_%s.eve" % (sub_id, session)
+        mne.write_events(outname, events[events_classic])
+
+    if len(events_interupt) is not 0:
+        outname_classic = "sub_%d_%s_%s.eve" % (sub_id, session, "classic")
+        outname_interrupt = "sub_%d_%s_%s.eve" % (sub_id, session, "interrupt")
+
+        mne.write_events(outname_classic, events[events_classic])
+        mne.write_events(outname_interrupt, events[events_interupt])
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
