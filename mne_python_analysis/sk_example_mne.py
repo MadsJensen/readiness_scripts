@@ -35,8 +35,6 @@ cmb_A = sub_2_classic[:, :, 250:-250]
 cmb_B = sub_2_plan[:, :, 250:-250]
 #cmb_C = sub_2_interupt[:, :, 250:-250]
 
-
-
 ###############################################################################
 # Decoding in sensor space using a linear SVM
 n_times = len(epochs.times)

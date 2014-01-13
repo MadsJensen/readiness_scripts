@@ -9,6 +9,9 @@ update 2
 
 import scipy.io as sio
 import numpy as np
+import pylab as pl
+import csv
+
 import mne
 from sklearn import linear_model
 from sklearn.cross_validation import StratifiedKFold, permutation_test_score
@@ -23,9 +26,9 @@ from sklearn.cross_validation import LeaveOneOut
 from sklearn import preprocessing
 from sklearn import lda
 
-from analyse_functions import combine_grads
-
 n_jobs = 8
+
+from analyse_functions import combine_grads
 
 
 import os
@@ -117,7 +120,7 @@ for i in range(n_trials):
 y = np.concatenate((np.zeros(n_trials), np.ones(n_trials), np.ones(n_trials)*2))
 #y = np.concatenate((np.zeros(n_trials), np.ones(n_trials)))
 X2 = X*1e12
-X_scl = preprocessing.scale(X)
+X_scl = preprocessing.scale(foobar)
 
 ##### find C_param ####
 
@@ -135,16 +138,16 @@ X_scl = preprocessing.scale(X)
 
 #### Logistic regression analysis ####
 
-#logReg = linear_model.LogisticRegression()
-cv = StratifiedKFold(y, 10)
+logReg = linear_model.LogisticRegression()
+cv = StratifiedKFold(y, 8)
 loo = LeaveOneOut(len(y))
  
 
-#cross_score_LR = cross_val_score(logReg, X_scl, y, accuracy_score, cv = loo, 
-#                    n_jobs = n_jobs, verbose = True)
+cross_score_LR = cross_val_score(logReg, X, y, scoring="accuracy", cv = cv, 
+                    n_jobs = 8, verbose = True)
                     
-#print "Cross val score: ", cross_score_LR.mean() 
-#print "The different cross_scores: ", cross_score_LR
+print "Cross val score: ", cross_score_LR.mean() 
+print "The different cross_scores: ", cross_score_LR
 
 
 #score, permutation_score, pvalue = permutation_test_score(logReg, X2, y,
@@ -162,39 +165,39 @@ loo = LeaveOneOut(len(y))
 #                    
 #print "Cross val score: ", cross_score_LDA.mean() 
 #print "The different cross_scores: ", cross_score_LDA
-#   
+   
 
 #### Naive bayes ####
 
 from sklearn.naive_bayes import GaussianNB
 ngb = GaussianNB()
 
-cross_score_NB = cross_val_score(ngb, X_scl, y, accuracy_score, cv = loo, 
-                    n_jobs = n_jobs, verbose = True)
+cross_score_NB = cross_val_score(ngb, X_scl, y, scoring="accuracy", cv = loo, 
+                    n_jobs = 8, verbose = True)
                     
 print "Cross val score: ", cross_score_NB.mean() 
 print "The different cross_scores: ", cross_score_NB
 
 score_NB, permutation_score_NB, pvalue_NB = permutation_test_score(ngb, X_scl, y,
-        accuracy_score, cv = cv, n_permutations = 1000, 
+        scoring="accuracy", cv = cv, n_permutations = 2000, 
         n_jobs = n_jobs, verbose = True)
 print 'Classification score:', score_NB, 'p-value:', pvalue_NB
 
 #### SVM ####
-#from sklearn.svm import LinearSVC
-#svc = LinearSVC()
+from sklearn.svm import LinearSVC
+svc = LinearSVC()
 
-#cross_score_SVM = cross_val_score(svc, X_scl, y, accuracy_score, cv = loo, 
-#                    n_jobs = n_jobs, verbose = True)
+cross_score_SVM = cross_val_score(svc, X_scl, y, scoring="accuracy", cv = loo, 
+                    n_jobs = 8, verbose = True)
                     
-#print "Cross val score: ", cross_score_SVM.mean() 
-#print "The different cross_scores: ", cross_score_SVM
+print "Cross val score: ", cross_score_SVM.mean() 
+print "The different cross_scores: ", cross_score_SVM
 
 
-#score_SVM, permutation_score_SVM, pvalue_SVM = permutation_test_score(ngb, X_scl, y,
-#        accuracy_score, cv = cv, n_permutations = 1000, 
-#        n_jobs = n_jobs, verbose = True)
-#print 'Classification score:', score_SVM, 'p-value:', pvalue_SVM
+score_SVM, permutation_score_SVM, pvalue_SVM = permutation_test_score(svc, X, y,
+        scoring="accuracy", cv = cv, n_permutations = 500, 
+        n_jobs = 8, verbose = True)
+print 'Classification score:', score_SVM, 'p-value:', pvalue_SVM
 
 
 

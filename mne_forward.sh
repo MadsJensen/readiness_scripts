@@ -2,24 +2,28 @@
 # http://imaging.mrc-cbu.cam.ac.uk/meg/AnalyzingData/MNE_ForwardSolution
 
 # variables
-datapath='/projects/MINDLAB2011_24-MEG-readiness/scratch' # root directory for your MEG data
-MRIpath='/projects/MINDLAB2011_24-MEG-readiness/scratch/mri'    # where your MRI subdirectories are
+#datapath='/projects/MINDLAB2011_24-MEG-readiness/scratch' # root directory for your MEG data
+#MRIpath='/projects/MINDLAB2011_24-MEG-readiness/scratch/mri'    # where your MRI subdirectories are
+
+datapath='/media/mje/My_Book/Data/MEG/MEG_libet/sub_2_tests' # root directory for your MEG data
+MRIpath='/media/mje/My_Book/Data/MEG/MEG_libet/sub_2_tests/mri' # where your MRI subdirectories are
 
 # The subjects and sessions to be used
 subjects=(\
     'sub_2' \
-    'sub_3' \
 )
 sessions=(\
-    'classic_tsss_mc' \
-    'plan_tsss_mc' \
-    'interupt_tsss_mc'\
+    'classic_tsss_mc_ica' \
+    'plan_tsss_mc_ica' \
+    'interupt_tsss_mc_ica'\
 )
 
 ## setup the filename to be used
+nsessions=${#sessions[*]}
+lastsession=`expr $nsessions - 1`
+
 nsubjects=${#subjects[*]}
 lastsubj=`expr $nsubjects - 1`
-
 ## Processing
 
 for m in `seq 0 $lastsubj` 
@@ -32,6 +36,9 @@ do
   ### setup model 1 layer (MEG only)
   mne_setup_forward_model --overwrite  --subject fs_${subjects[m]} --surf --homog --ico 4
 
+  echo " "
+  echo "Compute forward model"
+  echo " "
 
     for j in `seq 0 ${lastsession}`
     do

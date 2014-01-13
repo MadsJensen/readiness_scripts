@@ -1,5 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Aug  6 14:00:28 2013
 
-
+@author: mje
+"""
 
 import os
 import logging
@@ -11,6 +15,7 @@ def mne_forward_wrapper(sub_id, \
         ico=4, mindist=5,  spacing=5, \
         datapath='/projects/MINDLAB2011_24-MEG-readiness/scratch', \
         MRIpath='/projects/MINDLAB2011_24-MEG-readiness/scratch/mri'):
+            
     """ calls mne_setup_forward_model
     """    
     # Run mne_setup_forward_model
@@ -47,7 +52,8 @@ def mne_forward_wrapper(sub_id, \
         logger.info('Running mne_do_forward_model: %s ' % cmd)
         st = os.system(cmd)
         if st != 0:
-            raise RuntimeError('mne_do_forward_model returned non-zero exit status %d' % st)
+            raise RuntimeError("mne_do_forward_model returned" +  \
+            "non-zero exit status %d" % st)
         logger.info('[done]')
 
 
