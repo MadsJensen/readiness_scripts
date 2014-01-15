@@ -271,7 +271,7 @@ def make_events_files(sub_id, session):
 
     # load the raw fif
     print '\nLoading raw file'
-    raw = fiff.Raw(fname + "_tsss_mc.fif", preload=False)
+    raw = fiff.Raw(fname + "_tsss_mc_autobad.fif", preload=False)
 
     # EPOCHS ####
     events = mne.find_events(raw, stim_channel="STI101")
@@ -295,22 +295,18 @@ def make_events_files(sub_id, session):
         mne.write_events(outname_classic, events[events_classic])
         mne.write_events(outname_interrupt, events[events_interupt])
 
-        
+      
+def comp_noise(sub_id):
+    """ This function compute and save the noise covariance matrix from
+    the empty room recordings
+    """
 
+    fname = "sub_%d_empty_room.fif" % sub_id
+    outname = "sub_%d_empty_room-cov.fif" % sub_id
+    raw = mne.fiff.Raw(fname, preload=True)
 
+    picks = mne.fiff.pick_types(raw.info, meg=True, eeg=True, stim=False,
+                                eog=True, exclude='bads')
+    cov = mne.compute_raw_data_covariance(raw, picks=picks, reject=None)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    cov.save(outname)
