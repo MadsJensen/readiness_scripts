@@ -20,7 +20,8 @@ data_path = "/projects/MINDLAB2011_24-MEG-readiness/scratch"
 #epoch variables
 tmin, tmax = -3.5, 0.5
 baseline = (-3.5, -3.3)  # baseline time
-reject = dict(mag=3000e-12, grad=4000e-13)
+reject = dict(mag=4e-12, grad=4000e-13)
+
 
 # inversion variables
 snr = 3.0
