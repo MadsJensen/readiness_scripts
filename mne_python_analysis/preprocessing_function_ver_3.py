@@ -27,6 +27,7 @@ reject = dict(mag=4e-12, grad=4000e-13)
 snr = 3.0
 lambda2 = 1.0 / snr ** 2
 
+
 def preprocessing_raw(sub_id, session):
     """
     #########################################################################
