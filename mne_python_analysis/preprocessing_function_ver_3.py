@@ -14,8 +14,8 @@ from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse
 
 # directories
-subjects_dir = "/projects/MINDLAB2011_24-MEG-readiness/mri"
-data_path = "/projects/MINDLAB2011_24-MEG-readiness/scratch"
+subjects_dir = "/projects/MINDLAB2011_24-MEG-readiness/scratch/mri/"
+data_path = "/projects/MINDLAB2011_24-MEG-readiness/scratch/"
 
 #epoch variables
 tmin, tmax = -3.5, 0.5
@@ -26,6 +26,8 @@ reject = dict(mag=4e-12, grad=4000e-13)
 # inversion variables
 snr = 3.0
 lambda2 = 1.0 / snr ** 2
+methods = ["dSPM", "MNE"]
+
 
 
 def preprocessing_raw(sub_id, session):
@@ -51,7 +53,8 @@ def preprocessing_raw(sub_id, session):
 
     # load raw fif file
     raw = mne.fiff.Raw(data_path +
-                       "sub_%d_%s_tsss_mc.fif" % (sub_id, session),
+                       "sub_%d_%s-tsss-mc-autobad_ver_2.fif"
+                       % (sub_id, session),
                        preload=True)
 
     picks = mne.fiff.pick_types(raw.info, meg=True, eog=True, emg=True,
@@ -116,8 +119,9 @@ def preprocessing_raw(sub_id, session):
                                  overwrite=True)
     src.save("sub_%d_%s-src.fif" % (sub_id, session))
 
-    mri = "sub_%d_%s-trans.fif" % (sub_id, session)
-    bem = fs_sub + "/bem/" + fs_sub + "-5120-bem-sol.fif"
+    mri = data_path + "sub_%d_%s-tsss-mc-autobad_ver_2-trans.fif" \
+                      % (sub_id, session)
+    bem = subjects_dir + fs_sub + "/bem/" + fs_sub + "-5120-bem-sol.fif"
     forward = mne.make_forward_solution(epochs_ica.info, mri=mri,
                                         src=src, bem=bem)
     forward = mne.convert_forward_solution(forward, surf_ori=True)
@@ -128,13 +132,16 @@ def preprocessing_raw(sub_id, session):
     ########################################################################
     # Compute inverse solution
     ########################################################################
-    method = 'dSPM'
+    for method in methods:
+        inverse_operator = make_inverse_operator(evoked.info,
+                                                 forward, noise_cov,
+                                                 loose=0.2, depth=0.8)
+            # save inverse operator
+        mne.minimum_norm.write_inverse_operator("sub_%d_%s_%s-inv.fif"
+                                                % (sub_id, session, method),
+                                                inverse_operator)
 
-    inverse_operator = make_inverse_operator(evoked.info,
-                                             forward, noise_cov,
-                                             loose=0.2, depth=0.8)
-
-    # Compute inverse solution on contrast
-    stc = apply_inverse(evoked, inverse_operator, lambda2, method,
-                        pick_normal=None)
-    stc.save("sub_%d_%s_%s_inverse" % (sub_id, session, method))
+        # Compute inverse solution on contrast
+        stc = apply_inverse(evoked, inverse_operator, lambda2, method,
+                            pick_normal=None)
+        stc.save("sub_%d_%s_%s_inverse" % (sub_id, session, method))
