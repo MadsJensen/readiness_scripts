@@ -301,8 +301,8 @@ def comp_noise(sub_id):
     the empty room recordings
     """
 
-    fname = "sub_%d_empty_room.fif" % sub_id
-    outname = "sub_%d_empty_room-cov.fif" % sub_id
+    fname = "sub_%d_empty_room_tsss_autobad.fif" % sub_id
+    outname = "sub_%d_empty_room_tsss_autobad-cov.fif" % sub_id
     raw = mne.fiff.Raw(fname, preload=True)
 
     picks = mne.fiff.pick_types(raw.info, meg=True, eeg=True, stim=False,

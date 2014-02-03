@@ -8,6 +8,7 @@ Last edited 28-jan-2014
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 import mne
 from mne.preprocessing import ICA
@@ -52,13 +53,12 @@ def preprocessing_raw(sub_id, session):
 
     # load raw fif file
     raw = mne.fiff.Raw(data_path +
-                       "sub_%d_%s-tsss-mc-autobad_ver_2.fif"
-                       % (sub_id, session),
-                       preload=True)
+                       "sub_%d_%s-tsss-mc-autobad_ver_4.fif"
+                       % (sub_id, session), preload=True)
 
     picks = mne.fiff.pick_types(raw.info, meg=True, eog=True, emg=True,
                                 exclude='bads')
-    raw.filter(0, 48, method='iir', n_jobs=8)
+    raw.filter(None, 48, method='iir', n_jobs=8)
 
     events = mne.find_events(raw, stim_channel='STI101')
     event_ids = {"press": 1}
@@ -66,6 +66,10 @@ def preprocessing_raw(sub_id, session):
     epochs = mne.Epochs(raw, events, event_ids, tmin, tmax,
                         picks=picks, baseline=baseline, preload=True,
                         reject=reject)
+                        
+    mne.viz.plot_drop_log(epochs.drop_log)
+    plt.savefig(epochs.info.get('filename')[:-4] + '_droplog.pdf', 
+                dpi=100, format='pdf')
 
     ########################################################################
     # ICA
@@ -75,7 +79,7 @@ def preprocessing_raw(sub_id, session):
               max_pca_components=100,
               noise_cov=None)
 
-    ica.decompose_epochs(epochs, decim=2)
+    ica.decompose_epochs(epochs)
 
     eog_scores_1 = ica.find_sources_epochs(epochs, target="EOG001",
                                            score_func="pearsonr")

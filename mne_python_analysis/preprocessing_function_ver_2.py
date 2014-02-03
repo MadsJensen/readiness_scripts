@@ -13,10 +13,6 @@ import mne
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse
 
-# subjects_dir = "/projects/MINDLAB2011_24-MEG-readiness/mri"
-# data_path = "/projects/MINDLAB2011_24-MEG-readiness/scratch"
-
-
 ############################################################################
 # Load and filter data, set up epochs
 
@@ -38,19 +34,18 @@ def preprocessing_raw(sub_id, session):
     ########################################################################
     """
 
-#    raw_filename = "sub_%d_%s_tsss_mc.fif" % (sub_id, session)
-
     fs_sub = "fs_sub_%d" % sub_id
-    subjects_dir = "/home/mje/Projects/MEG_libet/mne_p_test/"
-    data_path = "/home/mje/Projects/MEG_libet/mne_p_test/"
+    subjects_dir = "/projects/MINDLAB2011_24-MEG-readiness/scratch/mri/"
+    data_path = "/projects/MINDLAB2011_24-MEG-readiness/scratch/"
 
     raw = mne.fiff.Raw(data_path +
-                        "sub_%d_%s_tsss_mc.fif" % (sub_id, session),
+                       "sub_%d_%s-tsss-mc-autobad_ver_2.fif"
+                       % (sub_id, session),
                        preload=True)  # load raw fif file
 
     picks = mne.fiff.pick_types(raw.info, meg=True, eog=True, emg=True,
                                 exclude='bads')
-    raw.filter(0, 48, method='iir', n_jobs=8)
+    raw.filter(0, 48, method='iir', n_jobs=6)
 
     events = mne.find_events(raw, stim_channel='STI101')
     event_ids = {"press": 1}
@@ -109,8 +104,8 @@ def preprocessing_raw(sub_id, session):
                                  overwrite=True)
     src.save("sub_%d_%s-src.fif" % (sub_id, session))
 
-    mri = 'sub_%d_%s-trans.fif' % (sub_id, session)
-    bem = fs_sub + "/bem/" + fs_sub + "-5120-bem-sol.fif"
+    mri = data_path + 'sub_%d_%s-trans.fif' % (sub_id, session)
+    bem = subjects_dir + fs_sub + "/bem/" + fs_sub + "-5120-bem-sol.fif"
     forward = mne.make_forward_solution(epochs_ica.info, mri=mri,
                                         src=src, bem=bem)
     forward = mne.convert_forward_solution(forward, surf_ori=True)
@@ -123,13 +118,18 @@ def preprocessing_raw(sub_id, session):
 
     snr = 3.0
     lambda2 = 1.0 / snr ** 2
-    method = 'dSPM'
+    methods = ["dSPM", "MNE"]
 
-    inverse_operator = make_inverse_operator(evoked.info,
-                                             forward, noise_cov,
-                                             loose=0.2, depth=0.8)
+    for method in methods:
+        inverse_operator = make_inverse_operator(evoked.info,
+                                                 forward, noise_cov,
+                                                 loose=0.2, depth=0.8)
+        # save inverse operator
+        mne.minimum_norm.write_inverse_operator("sub_%d_%s_%s-inv.fif"
+                                                % (sub_id, session, method),
+                                                inverse_operator)
 
-    # Compute inverse solution on contrast
-    stc = apply_inverse(evoked, inverse_operator, lambda2, method,
-                        pick_normal=None)
-    stc.save("sub_%d_%s_%s_inverse" % (sub_id, session, method))
+        # Compute inverse solution on contrast
+        stc = apply_inverse(evoked, inverse_operator, lambda2, method,
+                            pick_normal=None)
+        stc.save("sub_%d_%s_%s_inverse" % (sub_id, session, method))
