@@ -1,19 +1,30 @@
 
-plan_fifs = !find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'plan'
-classic_fifs = !find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'classic'
-inter_fifs = !find  /projects/MINDLAB2011_24-MEG-readiness/raw/ | grep fif | grep 'nter'
+import os
+
+# change to the dir  with the pythoon functions# change to the dir  with the pythoon functions
+os.chdir("/projects/MINDLAB2011_24-MEG-readiness/scripts")
 
 
-# remove sub 1
-del plan_fifs[0]
-del inter_fifs[0]  # remove extra due to search criteria
-del inter_fifs[0]
 
-for i in range(len(plan_fifs)):
+p = open("classic_fifs.txt")
+classic_list = [line for line in p.readlines()]
+
+p = open("plan_fifs.txt")
+plan_list = [line for line in p.readlines()]
+
+p = open("interrupt_fifs.txt")
+interrupt_list = [line for line in p.readlines()]
+
+
+# change data files dir
+os.chdir('/projects/MINDLAB2011_24-MEG-readiness/scratch')
+
+
+for i in range(len(classic_list)):
     subNumber = i + 2
-    ln_name_plan = "sub_%d_plan_raw.fif" % subNumber
-    ln_name_classic = "sub_%d_classic_raw.fif" % subNumber
-    ln_name_interupt = "sub_%d_interupt_raw.fif" % subNumber
-    ! ln -s {plan_fifs[i]} {ln_name_plan}
-    ! ln -s {classic_fifs[i]} {ln_name_classic}
-    ! ln -s {inter_fifs[i]} {ln_name_interupt}
+    ln_name_plan = "sub_%d_plan-raw.fif" % subNumber
+    ln_name_classic = "sub_%d_classic-raw.fif" % subNumber
+    ln_name_interrupt = "sub_%d_interrupt-raw.fif" % subNumber
+    ! ln -s {plan_list[i][:-1]} {ln_name_plan}
+    ! ln -s {classic_list[i][:-1]} {ln_name_classic}
+    ! ln -s {interrupt_list[i][:-1]} {ln_name_interrupt}

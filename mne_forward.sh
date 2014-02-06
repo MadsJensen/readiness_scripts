@@ -5,17 +5,15 @@
 #datapath='/projects/MINDLAB2011_24-MEG-readiness/scratch' # root directory for your MEG data
 #MRIpath='/projects/MINDLAB2011_24-MEG-readiness/scratch/mri'    # where your MRI subdirectories are
 
-datapath='/media/mje/My_Book/Data/MEG/MEG_libet/sub_2_tests' # root directory for your MEG data
-MRIpath='/media/mje/My_Book/Data/MEG/MEG_libet/sub_2_tests/mri' # where your MRI subdirectories are
+datapath='/home/mje/Projects/MEG_libet/BST_test/' # root directory for your MEG data
+MRIpath='/home/mje/Projects/MEG_libet/BST_test/' # 
 
 # The subjects and sessions to be used
 subjects=(\
     'sub_2' \
 )
 sessions=(\
-    'classic_tsss_mc_ica' \
-    'plan_tsss_mc_ica' \
-    'interupt_tsss_mc_ica'\
+    'classic_tsss_mc' \
 )
 
 ## setup the filename to be used

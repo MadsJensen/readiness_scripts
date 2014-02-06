@@ -296,3 +296,4 @@ def apply_maxfilter(in_fname, out_fname, origin=None, frame='device',
     logger.info('[done]')
 
     return origin
+

@@ -3,7 +3,7 @@
 Function to preprocess raw fif data, see function doc string for details.
 Written by Mads Jensen (mje.mads@gmail.com)
 
-last edited 23-jan-2014
+Last edited 28-jan-2014
 
 """
 
@@ -13,6 +13,13 @@ import mne
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse
 
+<<<<<<< HEAD
+=======
+subjects_dir = "/projects/MINDLAB2011_24-MEG-readiness/mri"
+data_path = "/projects/MINDLAB2011_24-MEG-readiness/scratch"
+
+
+>>>>>>> d8704466391d189bbdbd9aff12347246532452b8
 ############################################################################
 # Load and filter data, set up epochs
 
@@ -29,12 +36,13 @@ def preprocessing_raw(sub_id, session):
         is automatically removed.
     - Noise cov is calculated
     - forward model is computed
-    - inverse solution withZX dSPM is computed.
+    - inverse solution with dSPM and MNE is computed.
 
     ########################################################################
     """
 
     fs_sub = "fs_sub_%d" % sub_id
+<<<<<<< HEAD
     subjects_dir = "/projects/MINDLAB2011_24-MEG-readiness/scratch/mri/"
     data_path = "/projects/MINDLAB2011_24-MEG-readiness/scratch/"
 
@@ -42,6 +50,13 @@ def preprocessing_raw(sub_id, session):
                        "sub_%d_%s-tsss-mc-autobad_ver_2.fif"
                        % (sub_id, session),
                        preload=True)  # load raw fif file
+=======
+    
+    # load raw fif file
+    raw = mne.fiff.Raw(data_path +
+                       "sub_%d_%s_tsss_mc.fif" % (sub_id, session),
+                       preload=True)
+>>>>>>> d8704466391d189bbdbd9aff12347246532452b8
 
     picks = mne.fiff.pick_types(raw.info, meg=True, eog=True, emg=True,
                                 exclude='bads')
@@ -58,45 +73,52 @@ def preprocessing_raw(sub_id, session):
                         picks=picks, baseline=baseline, preload=True,
                         reject=reject)
 
-    # Fit ICA, find and remove major artifacts
-
+    ########################################################################
+    # ICA
+    ########################################################################
+    # Fit ICA, find and remove major artefacts
     ica = ICA(n_components=0.90, n_pca_components=64,
               max_pca_components=100,
               noise_cov=None)
 
     ica.decompose_epochs(epochs, decim=2)
-    print ica
 
-    eog_scores = ica.find_sources_epochs(epochs, target='EOG001',
-                                         score_func='pearsonr')
+    eog_scores_1 = ica.find_sources_epochs(epochs, target="EOG001",
+                                           score_func="pearsonr")
+    eog_scores_2 = ica.find_sources_epochs(epochs, target="EOG002",
+                                           score_func="pearsonr")
 
     # get maximum correlation index for EOG
-    eog_source_idx = np.abs(eog_scores).argmax()
+    eog_source_idx_1 = np.abs(eog_scores_1).argmax()
+    eog_source_idx_2 = np.abs(eog_scores_2).argmax()
 
     # select ICA sources and reconstruct MEG signals, compute clean ERFs
-    # Add detected artifact sources to exclusion list
-    ica.exclude += [eog_source_idx]
+    # Add detected artefact sources to exclusion list
+    # We now add the eog artefacts to the ica.exclusion list
+    if eog_source_idx_1 == eog_source_idx_2:
+        ica.exclude += [eog_source_idx_1]
+    elif eog_source_idx_1 != eog_source_idx_2:
+        ica.exclude += [eog_source_idx_1, eog_source_idx_2]
 
     # Restore sensor space data
     epochs_ica = ica.pick_sources_epochs(epochs)
-
-    epochs_ica = ica.pick_sources_epochs(epochs)
-
     epochs_ica.save("sub_%d_%s_epochs.fif" % (sub_id, session))
 
     evoked = epochs_ica.average()
-
     evoked.save("sub_%d_%s-evk.fif" % (sub_id, session))
 
-    # estimate noise covarariance
+    ########################################################################
+    # estimate noise covariance
+    ########################################################################
+
     noise_cov = mne.compute_covariance(epochs.crop(-3.5, -3.3,
                                                    copy=True))
-
     # save noise cov
     noise_cov.save("sub_%d_%s-cov.fif" % (sub_id, session))
 
     ########################################################################
     # Compute forward model
+    ########################################################################
 
     # Make source space
     src = mne.setup_source_space(fs_sub, spacing='ico4',
@@ -104,8 +126,13 @@ def preprocessing_raw(sub_id, session):
                                  overwrite=True)
     src.save("sub_%d_%s-src.fif" % (sub_id, session))
 
+<<<<<<< HEAD
     mri = data_path + 'sub_%d_%s-trans.fif' % (sub_id, session)
     bem = subjects_dir + fs_sub + "/bem/" + fs_sub + "-5120-bem-sol.fif"
+=======
+    mri = "sub_%d_%s-trans.fif" % (sub_id, session)
+    bem = fs_sub + "/bem/" + fs_sub + "-5120-bem-sol.fif"
+>>>>>>> d8704466391d189bbdbd9aff12347246532452b8
     forward = mne.make_forward_solution(epochs_ica.info, mri=mri,
                                         src=src, bem=bem)
     forward = mne.convert_forward_solution(forward, surf_ori=True)
@@ -115,6 +142,7 @@ def preprocessing_raw(sub_id, session):
 
     ########################################################################
     # Compute inverse solution
+    ########################################################################
 
     snr = 3.0
     lambda2 = 1.0 / snr ** 2

@@ -5,11 +5,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb
+load GA_plan_cmb
 
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+load neuromag306cmb_neighb.mat
+% load neuromag306mag_neighb
 
 
 cfg = [];
@@ -27,7 +27,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);
@@ -54,11 +54,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb;
+load GA_plan_cmb;
 
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+load neuromag306cmb_neighb.mat
+% load neuromag306mag_neighb.mat
 
 
 cfg = [];
@@ -76,7 +76,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);
@@ -103,11 +103,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb;
+load GA_plan_cmb;
 
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+load neuromag306cmb_neighb.mat
+% load neuromag306mag_neighb.mat
 
 
 cfg = [];
@@ -125,7 +125,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);
@@ -153,11 +153,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb;
+load GA_plan_cmb;
 
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+load neuromag306cmb_neighb.mat
+% load neuromag306mag_neighb.mat
 
 
 cfg = [];
@@ -175,7 +175,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);
@@ -202,11 +202,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb;
+load GA_plan_cmb;
 
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+load neuromag306cmb_neighb.mat
+% load neuromag306mag_neighb.mat
 
 
 cfg = [];
@@ -224,7 +224,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);
@@ -251,11 +251,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb;
+load GA_plan_cmb;
 
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+% load neuromag306cmb_neighb.mat
+load neuromag306mag_neighb.mat
 
 
 cfg = [];
@@ -273,7 +273,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);
@@ -300,11 +300,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb;
+load GA_plan_cmb;
 
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+% load neuromag306cmb_neighb.mat
+load neuromag306mag_neighb.mat
 
 
 cfg = [];
@@ -322,7 +322,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);
@@ -349,11 +349,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb;
+load GA_plan_cmb;
 
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+% neuromag306cmb_neighb
+load neuromag306mag_neighb
 
 
 cfg = [];
@@ -371,7 +371,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);
@@ -399,11 +399,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb;
+load GA_plan_cmb;
 
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+% neuromag306cmb_neighb
+load neuromag306mag_neighb
 
 
 cfg = [];
@@ -421,7 +421,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);
@@ -448,11 +448,11 @@ clear;
 
 
 % load the data files
-load GA_cls_cmb_re;
-load GA_pln_cmb_re;
+load GA_classic_cmb;
+load GA_plan_cmb;
 
-% load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306cmb_neighb.mat
-load /users/mje/matlab/Toolboxes/Fieldtrip/template/neighbours/neuromag306mag_neighb.mat
+% neuromag306cmb_neighb
+load neuromag306mag_neighb
 
 
 cfg = [];
@@ -470,7 +470,7 @@ cfg.tail = 0;
 
 cfg.clustertail = 0;
 cfg.alpha = 0.025;
-cfg.numrandomization = 5000;
+cfg.numrandomization = 10000;
 
 subj = 12;
 design = zeros(2,2*subj);

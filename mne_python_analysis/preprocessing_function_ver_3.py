@@ -30,6 +30,7 @@ lambda2 = 1.0 / snr ** 2
 methods = ["dSPM", "MNE"]
 
 
+
 def preprocessing_raw(sub_id, session):
     """
     #########################################################################
@@ -60,15 +61,25 @@ def preprocessing_raw(sub_id, session):
                                 exclude='bads')
     raw.filter(None, 48, method='iir', n_jobs=8)
 
+    # setup events 
     events = mne.find_events(raw, stim_channel='STI101')
     event_ids = {"press": 1}
+    events_classic = []
+    events_interupt = []
+    for i in range(len(events)):
+        if i > 0:
+            if events[i, 2] == 1 and events[i - 1, 2] == 1:
+                events_classic.append(i)
+            elif events[i, 2] == 1 and events[i - 1, 2] == 2:
+                events_interupt.append(i)
 
-    epochs = mne.Epochs(raw, events, event_ids, tmin, tmax,
+
+    epochs = mne.Epochs(raw, events[events_classic], event_ids, tmin, tmax,
                         picks=picks, baseline=baseline, preload=True,
                         reject=reject)
                         
     mne.viz.plot_drop_log(epochs.drop_log)
-    plt.savefig(epochs.info.get('filename')[:-4] + '_droplog.pdf', 
+    plt.savefig(epochs.info.get('filename')[:-4] + '_droplog_ver_4.pdf', 
                 dpi=100, format='pdf')
 
     ########################################################################
@@ -122,9 +133,10 @@ def preprocessing_raw(sub_id, session):
                                  overwrite=True)
     src.save("sub_%d_%s-src.fif" % (sub_id, session))
 
-    mri = data_path + "sub_%d_%s-tsss-mc-autobad_ver_2-trans.fif" \
+    mri = data_path + "sub_%d_%s-tsss-mc-autobad_ver_4-trans.fif" \
                       % (sub_id, session)
-    bem = subjects_dir + fs_sub + "/bem/" + fs_sub + "-5120-bem-sol.fif"
+#    bem = subjects_dir + fs_sub + "/bem/" + fs_sub + "-5120-bem-sol.fif"
+    bem = subjects_dir + fs_sub + "/bem/inner_skull.surf" 
     forward = mne.make_forward_solution(epochs_ica.info, mri=mri,
                                         src=src, bem=bem)
     forward = mne.convert_forward_solution(forward, surf_ori=True)
