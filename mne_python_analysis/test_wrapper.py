@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 
 import os
-from mne.preprocessing.maxfilter import apply_maxfilter
 
 #### ISIS PATHS ####
 # setup subjects dir 
@@ -22,15 +21,8 @@ os.chdir('/projects/MINDLAB2011_24-MEG-readiness/scratch/')
 #os.chdir(data_path)
 
 
-subs = [6, 11]
+subs = [11]
 sessions = ["classic", "plan"]
-
-
-#subs = [11]
-##subs = [13,14,15,16]
-#
-#sessions = ["classic", "plan"]
-
 
 os.chdir('/projects/MINDLAB2011_24-MEG-readiness/scratch/mne_analysis_5')
 for sub in subs:

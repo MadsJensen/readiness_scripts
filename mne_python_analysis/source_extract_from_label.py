@@ -11,6 +11,7 @@ import os
 import pylab as plt
 import numpy as np
 
+from scipy import stats
 
 ### on isis paths ####
 data_path = "/home/mje/Projects/MEG_libet/mvpa_test"
@@ -22,65 +23,131 @@ os.chdir("/projects/MINDLAB2011_24-MEG-readiness/scripts/mne_python_analysis")
 os.chdir('/projects/MINDLAB2011_24-MEG-readiness/scratch/mne_analysis_5')
 
 
-#### on wintermute and mounted paths ####
+### on wintermute and mounted paths ####
 #data_path = "/home/mje/mnt/scratch/"
 #subjects_dir = "/home/mje/mnt/scratch/mri/"
 #os.environ["SUBJECTS_DIR"] = subjects_dir
-## change to the dir  with the pythoon functions# change to the dir  with the pythoon functions
+# change to the dir  with the pythoon functions# change to the dir  with the pythoon functions
 
 # change data files dir
-#os.chdir(data_path)
+#os.chdir(data_path + "mne_analysis_5")
 
 
 
 subs =[2,3,4,7,8,9,10,12,13,14,15,16]
-#subs = [2]
 
 
-ts_cls = np.empty([len(subs), 200])
+
+ts_cls = np.empty([len(subs), 401])
 for j in range(len(subs)):
-    stc = mne.read_source_estimate("sub_%d_classic_dSPM_inverse" % subs[j])
-#    src = mne.read_source_spaces("sub_%d_classic-src.fif" % subs[j])
+    stc = mne.read_source_estimate("sub_%d_classic_MNE_-275_-235_inverse" % subs[j])
     forward =\
         mne.read_forward_solution(
-        "sub_%d_classic-tsss-mc-autobad_ver_4-fwd.fif" % subs[j])
-    lh_BA6 = mne.read_label(subjects_dir + 'fs_sub_%d/label/lh.BA6.label' 
-                            %subs[j])
+        "sub_%d_plan-tsss-mc-autobad_ver_4-fwd.fif" % subs[j])
+#    lh_BA6 = mne.read_label(subjects_dir + 'fs_sub_%d/label/lh.BA6.label' 
+#                            %subs[j])
     precentral_lh = mne.labels_from_parc("fs_sub_%d" %subs[j], parc="aparc", 
                                      subjects_dir = subjects_dir,
                                      regexp="precuneus-lh")[0][0]
-    
-    stc.crop(-3, -2)
-    stc.resample(200)
-    
-    ts_lh = stc.extract_label_time_course(precentral_lh, forward["src"], 
+    ts_lh = stc.extract_label_time_course(precentral_lh,forward["src"], 
                                               mode="mean")    
-                          
-    ts_cls[j,: ] = ts_lh
+    
+    ts_cls[j] = ts_lh
 
-ts_pln = np.empty([len(subs), 200])
+
+
+ts_pln = np.empty([len(subs), 401])
 for j in range(len(subs)):
-    stc = mne.read_source_estimate("sub_%d_plan_dSPM_inverse" % subs[j])
+    stc = mne.read_source_estimate("sub_%d_plan_MNE_-275_-235_inverse" % subs[j])
+    forward =\
+        mne.read_forward_solution(
+        "sub_%d_plan-tsss-mc-autobad_ver_4-fwd.fif" % subs[j])
+#    lh_BA6 = mne.read_label(subjects_dir + 'fs_sub_%d/label/lh.BA6.label' 
+#                            %subs[j])
+    precentral_lh = mne.labels_from_parc("fs_sub_%d" %subs[j], parc="aparc", 
+                                     subjects_dir = subjects_dir,
+                                     regexp="precuneus-lh")[0][0]
+
+    ts_lh = stc.extract_label_time_course(precentral_lh,forward["src"], 
+                                              mode="mean")    
+    
+    ts_pln[j] = ts_lh
+
+plt.figure()
+plt.plot(stc.times, ts_cls.mean(axis=0).T, 'b')
+plt.plot(stc.times, ts_pln.mean(axis=0).T, 'g')
+
+plt.figure()
+plt.plot(ts_cls.T, 'b')
+plt.plot(ts_pln.T, 'g')
+
+d1 = ts_cls.max(1)
+d2 = ts_pln.max(1)
+#
+#plt.figure()
+#plt.boxplot([d1, d2])
+
+print stats.ttest_rel(d1 ,d2)
+
+
+foobar_ts = np.empty([len(subs), 1])
+ts_cls_05_0 = np.empty([len(subs), 400])
+for j in range(len(subs)):
+    stc = mne.read_source_estimate("sub_%d_classic_MNE_inverse" % subs[j])
     forward =\
         mne.read_forward_solution(
         "sub_%d_plan-tsss-mc-autobad_ver_4-fwd.fif" % subs[j])
     lh_BA6 = mne.read_label(subjects_dir + 'fs_sub_%d/label/lh.BA6.label' 
                             %subs[j])
-    precentral_lh = mne.labels_from_parc("fs_sub_%d" %subs[j], parc="aparc", 
-                                     subjects_dir = subjects_dir,
-                                     regexp="precuneus-lh")[0][0]
-    
-    stc.crop(-3, -2)    
-    stc.resample(200)
-    
-    ts_lh = stc.extract_label_time_course(precentral_lh,forward["src"], 
+#    precentral_lh = mne.labels_from_parc("fs_sub_%d" %subs[j], parc="aparc", 
+#                                     subjects_dir = subjects_dir,
+#                                     regexp="precentral-lh")[0][0]
+    stc.crop(-2.75, -2.35)
+
+    ts_lh = stc.extract_label_time_course(lh_BA6,forward["src"], 
                                               mode="mean")    
     
-    ts_pln[j] = ts_lh
+    ts_cls_05_0[j] = ts_lh
+    tmp = stc.in_label(lh_BA6)
+    tmp2 = tmp.data
+    foobar_ts[j] = tmp2.max()
+
+foobar_ts2 = np.empty([len(subs), 1])
+ts_pln_05_0 = np.empty([len(subs), 400])
+for j in range(len(subs)):
+    stc = mne.read_source_estimate("sub_%d_plan_MNE_inverse" % subs[j])
+    forward =\
+        mne.read_forward_solution(
+        "sub_%d_plan-tsss-mc-autobad_ver_4-fwd.fif" % subs[j])
+    lh_BA6 = mne.read_label(subjects_dir + 'fs_sub_%d/label/lh.BA6.label' 
+                            %subs[j])
+#    precentral_lh = mne.labels_from_parc("fs_sub_%d" %subs[j], parc="aparc", 
+#                                     subjects_dir = subjects_dir,
+#                                     regexp="precentral-lh")[0][0]
+    stc.crop(-2.75, -2.35)    
+    ts_lh = stc.extract_label_time_course(lh_BA6,forward["src"], 
+                                              mode="mean")    
+    ts_pln_05_0[j] = ts_lh
     
-    
+    tmp = stc.in_label(lh_BA6)
+    tmp2 = tmp.data
+    foobar_ts2[j] = tmp2.max()
+
 plt.figure()
-plt.plot(stc.times, ts_cls.mean(axis=0).T, 'b')
-plt.plot(stc.times, ts_pln.mean(axis=0).T, 'g')
+plt.plot(stc.times, ts_cls_05_0.mean(axis=0).T, 'b')
+plt.plot(stc.times, ts_pln_05_0.mean(axis=0).T, 'g')
+
+#plt.figure()
+#plt.plot(ts_cls.T, 'b')
+#plt.plot(ts_pln.T, 'g')
+
+d1 = ts_cls_05_0.max(1)
+d2 = ts_pln_05_0.max(1)
+#
+#plt.figure()
+#plt.boxplot([d1, d2])
+
+
+print stats.ttest_rel(d1 ,d2)
 
 
