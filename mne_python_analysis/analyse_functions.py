@@ -11,6 +11,9 @@ from mne.layouts.layout import _merge_grad_data
 from mne.baseline import rescale
 
 
+subjects_dir = "/projects/MINDLAB2011_24-MEG-readiness/scratch/mri"
+
+
 def combine_grads(epochs, baseline=(-3.5, -3.2)):
     """Combines data from Epochs into a RMS data structure
     """
@@ -52,3 +55,90 @@ def global_RMS(sub, session, baseline=500, selection="Vertex"):
     grms = data/baseline_std
 
     return grms
+
+
+def max_values(sub_id, session, twoi_start, twoi_end, BA, hemi="lh"):
+    """ Function return the maximum value for the subject
+    as a single value.
+    """
+
+    stc = mne.read_source_estimate("sub_%d_%s_MNE_inverse_morph"
+                                   % (sub_id, session))
+    src =\
+        mne.read_source_spaces(subjects_dir +
+                               "/fsaverage/bem/fsaverage-7-src.fif")
+    label = mne.labels_from_parc("fsaverage", parc="PALS_B12_Brodmann",
+                                 subjects_dir=subjects_dir,
+                                 regexp="Brodmann.%d-%s"
+                                 % (BA, hemi))[0][0]
+
+    stc.crop(twoi_start, twoi_end)
+
+    tc = stc.extract_label_time_course(label, src=src, mode="max")
+    return tc.max()
+
+
+def mean_values(sub_id, session, twoi_start, twoi_end, BA, hemi="lh"):
+    """ Function return the maximum value for the subject
+    as a single value.
+    """
+
+    stc = mne.read_source_estimate("sub_%d_%s_MNE_inverse_morph"
+                                   % (sub_id, session))
+    src =\
+        mne.read_source_spaces(subjects_dir +
+                               "/fsaverage/bem/fsaverage-7-src.fif")
+    label = mne.labels_from_parc("fsaverage", parc="PALS_B12_Brodmann",
+                                 subjects_dir=subjects_dir,
+                                 regexp="Brodmann.%d-%s"
+                                 % (BA, hemi))[0][0]
+
+    stc.crop(twoi_start, twoi_end)
+
+    tc = stc.extract_label_time_course(label, src=src, mode="max")
+    return tc.mean()
+
+
+def max_values_tc(sub_id, session, twoi_start, twoi_end, BA, hemi="lh"):
+    """ Function return the maximum value for the subject
+    as a single value.
+    """
+
+    stc = mne.read_source_estimate("sub_%d_%s_MNE_inverse_morph"
+                                   % (sub_id, session))
+    src =\
+        mne.read_source_spaces(subjects_dir +
+                               "/fsaverage/bem/fsaverage-7-src.fif")
+    label = mne.labels_from_parc("fsaverage", parc="PALS_B12_Brodmann",
+                                 subjects_dir=subjects_dir,
+                                 regexp="Brodmann.%d-%s"
+                                 % (BA, hemi))[0][0]
+
+    stc.crop(twoi_start, twoi_end)
+
+    return stc.extract_label_time_course(label, src=src, mode="max")
+
+
+def time_for_max_value(sub_id, session, twoi_start, twoi_end, BA, hemi="lh"):
+    """ Function return the maximum value for the subject
+    as a single value.
+    """
+
+    stc = mne.read_source_estimate("sub_%d_%s_MNE_inverse_morph"
+                                   % (sub_id, session))
+    src =\
+        mne.read_source_spaces(subjects_dir +
+                               "/fsaverage/bem/fsaverage-7-src.fif")
+    label = mne.labels_from_parc("fsaverage", parc="PALS_B12_Brodmann",
+                                 subjects_dir=subjects_dir,
+                                 regexp="Brodmann.%d-%s"
+                                 % (BA, hemi))[0][0]
+
+    stc.crop(twoi_start, twoi_end)
+
+    tc = stc.extract_label_time_course(label, src=src, mode="max")
+
+    maxIndex = tc.argmax()
+    time_for_max = stc.times[maxIndex]
+
+    return time_for_max
